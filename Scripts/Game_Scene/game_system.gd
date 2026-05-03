@@ -14,7 +14,8 @@ var hovered_control: Control
 var focused_control: Control
 #-------------------------------------------------------------------------------
 @export var card_info: Card_Control
-@export var card_info_richtext: RichTextLabel
+@export var card_info_richtext_stats: RichTextLabel
+@export var card_info_richtext_effect: RichTextLabel
 #-------------------------------------------------------------------------------
 @export var debug_label: Label
 @export var fps_label: Label
@@ -37,6 +38,12 @@ var left_mouse_counter: int = 0
 #endregion
 #-------------------------------------------------------------------------------
 #region MONOVEHAVIOUR
+#-------------------------------------------------------------------------------
+func _enter_tree() -> void:
+	singleton.game_scene =  self
+#-------------------------------------------------------------------------------
+func _exit_tree() -> void:
+	singleton.game_scene =  null
 #-------------------------------------------------------------------------------
 func _ready() -> void:
 	screen_size = world_2d.get_viewport_rect().size
@@ -437,8 +444,11 @@ func Is_Player_1(_player:Player_Node_2D) -> bool:
 #-------------------------------------------------------------------------------
 func Set_Card_Info(_card_serializable:Card_Serializable):
 	Set_Card_Control_with_Card_Serializable(card_info, _card_serializable)
+	card_info_richtext_stats.text = Get_Card_Stats(_card_serializable)
+	card_info_richtext_effect.text = Get_Card_Effect(_card_serializable)
+#-------------------------------------------------------------------------------
+func Get_Card_Stats(_card_serializable:Card_Serializable) -> String:
 	var _s: String = ""
-	_s += "[center]"
 	_s += "[lb] "
 	_s += str(Card_Resource.ATRIBUTO.keys()[_card_serializable.myATRIBUTO])
 	_s += " - "
@@ -452,13 +462,28 @@ func Set_Card_Info(_card_serializable:Card_Serializable):
 	_s += "  //  "
 	_s += "Defense: " + str(_card_serializable.defense)
 	#_s += "\n"
-	_s += "[/center]"
-	_s += "\n"
-	_s += "\n"
-	_s += "Effect:" + "\n"
+	return _s
+#-------------------------------------------------------------------------------
+func Get_Card_Effect(_card_serializable:Card_Serializable) -> String:
+	var _s: String = ""
 	_s += "Bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla "
 	_s += "bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla "
 	_s += "bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla "
+	_s += "bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla "
+	_s += "bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla "
+	_s += "bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla "
+	_s += "bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla "
+	_s += "bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla "
+	_s += "bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla "
+	_s += "bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla "
+	_s += "bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla "
+	_s += "bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla "
 	_s += "bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla."
-	card_info_richtext.text = _s
+	return _s
+#-------------------------------------------------------------------------------
+func get_resource_filename(_resource: Resource) -> String:
+	return _resource.resource_path.get_file().trim_suffix('.tres')
+#-------------------------------------------------------------------------------
+func get_instance_filename(_node: Node) -> String:
+	return _node.scene_file_path.get_file().trim_suffix('.tscn')
 #-------------------------------------------------------------------------------

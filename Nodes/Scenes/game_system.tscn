@@ -22,7 +22,7 @@
 [ext_resource type="Resource" uid="uid://c61qo04lwak6l" path="res://Cards/Resources/dragonmaid_monster (8).tres" id="14_qvm7l"]
 [ext_resource type="Resource" uid="uid://dqo286ax8tovv" path="res://Cards/Resources/dragonmaid_monster (9).tres" id="15_f0mm6"]
 
-[node name="game_system" type="Node" unique_id=1654901492 node_paths=PackedStringArray("card_button_root", "card_info", "card_info_richtext", "debug_label", "fps_label", "player_1", "player_2", "world_2d")]
+[node name="game_system" type="Node" unique_id=1654901492 node_paths=PackedStringArray("card_button_root", "card_info", "card_info_richtext_stats", "card_info_richtext_effect", "debug_label", "fps_label", "player_1", "player_2", "world_2d")]
 script = ExtResource("1_61w3p")
 card_node_2d_prefab = ExtResource("4_3qfkf")
 frame_monster = ExtResource("3_qaew0")
@@ -31,7 +31,8 @@ frame_magic = ExtResource("5_4joci")
 frame_trap = ExtResource("6_b3seq")
 card_button_root = NodePath("CanvasLayer/Control")
 card_info = NodePath("CanvasLayer/MarginContainer3/VBoxContainer/Card_Control")
-card_info_richtext = NodePath("CanvasLayer/MarginContainer3/VBoxContainer/Panel/MarginContainer/RichTextLabel")
+card_info_richtext_stats = NodePath("CanvasLayer/MarginContainer3/VBoxContainer/PanelContainer/MarginContainer/RichTextLabel")
+card_info_richtext_effect = NodePath("CanvasLayer/MarginContainer3/VBoxContainer/Panel2/MarginContainer/VBoxContainer/RichTextLabel2")
 debug_label = NodePath("CanvasLayer/MarginContainer/debug_Label")
 fps_label = NodePath("CanvasLayer/MarginContainer/fps_Label")
 player_1 = NodePath("World_2D/Player_1")
@@ -305,17 +306,34 @@ theme_override_constants/margin_left = 15
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/MarginContainer3" unique_id=452766263]
 layout_mode = 2
-theme_override_constants/separation = 15
 
 [node name="Card_Control" parent="CanvasLayer/MarginContainer3/VBoxContainer" unique_id=118479895 instance=ExtResource("6_oe5uq")]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="Panel" type="Panel" parent="CanvasLayer/MarginContainer3/VBoxContainer" unique_id=521777129]
+[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/MarginContainer3/VBoxContainer" unique_id=93948345]
 layout_mode = 2
-size_flags_vertical = 3
 
-[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/MarginContainer3/VBoxContainer/Panel" unique_id=649005276]
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/MarginContainer3/VBoxContainer/PanelContainer" unique_id=649005276]
+layout_mode = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 15
+
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/MarginContainer3/VBoxContainer/PanelContainer/MarginContainer" unique_id=1267035727]
+layout_mode = 2
+bbcode_enabled = true
+text = "[ DRAGON - WATER - Lv.8 ]
+Attack: 500  //  Defense: 1700"
+fit_content = true
+horizontal_alignment = 1
+
+[node name="Panel2" type="Panel" parent="CanvasLayer/MarginContainer3/VBoxContainer" unique_id=332560530]
+custom_minimum_size = Vector2(0, 315)
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/MarginContainer3/VBoxContainer/Panel2" unique_id=11516507]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -327,8 +345,18 @@ theme_override_constants/margin_top = 15
 theme_override_constants/margin_right = 15
 theme_override_constants/margin_bottom = 15
 
-[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/MarginContainer3/VBoxContainer/Panel/MarginContainer" unique_id=1267035727]
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/MarginContainer3/VBoxContainer/Panel2/MarginContainer" unique_id=1276241129]
 layout_mode = 2
+
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/MarginContainer3/VBoxContainer/Panel2/MarginContainer/VBoxContainer" unique_id=1782028644]
+layout_mode = 2
+bbcode_enabled = true
+text = "Effect:"
+fit_content = true
+
+[node name="RichTextLabel2" type="RichTextLabel" parent="CanvasLayer/MarginContainer3/VBoxContainer/Panel2/MarginContainer/VBoxContainer" unique_id=2074311890]
+layout_mode = 2
+size_flags_vertical = 3
 bbcode_enabled = true
 text = "Bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla"
 
