@@ -1,7 +1,13 @@
 extends Node
 class_name Game_System
 #-------------------------------------------------------------------------------
+enum PHASE{START, MAIN_1, BATTLE, MAIN_2, END}
+enum MAIN_PHASE{IDLE, SUMMON}
+#-------------------------------------------------------------------------------
 #region VARIABLES
+#-------------------------------------------------------------------------------
+var myPHASE: PHASE = PHASE.START
+var myMAIN_PHASE: MAIN_PHASE = MAIN_PHASE.IDLE
 #-------------------------------------------------------------------------------
 @export var card_node_2d_prefab: PackedScene
 @export var frame_monster: Texture2D
@@ -9,7 +15,9 @@ class_name Game_System
 @export var frame_magic: Texture2D
 @export var frame_trap: Texture2D
 #-------------------------------------------------------------------------------
+@export var phase_button: Button
 @export var card_button_root: Control
+@export var card_button_array: Array[Button]
 var hovered_control: Control
 var focused_control: Control
 #-------------------------------------------------------------------------------
@@ -55,6 +63,7 @@ func _ready() -> void:
 	Set_Player(player_2)
 	#-------------------------------------------------------------------------------
 	card_button_root.hide()
+	singleton.Set_Button(phase_button, func():singleton.Common_Selected(), func():Phase_Button_Submit(phase_button))
 	#-------------------------------------------------------------------------------
 	await Seconds(0.5)
 	Draw_X_Cards(player_1, 5)
@@ -259,10 +268,12 @@ func Get_Mouse_Pointer() -> Array[Interactable_Node_2D]:
 #region SET PLAYER FUNCTIONS
 #-------------------------------------------------------------------------------
 func Set_Player(_player:Player_Node_2D):
-	_player.main_deck_card_serializable_array = Create_Card_Serializable_Array_for_Card_Resource_Array(_player.main_deck_card_resource_array)
+	_player.main_deck_card_serializable_array = Create_Card_Serializable_Array_for_Card_Resource_Array(_player, _player.main_deck_card_resource_array)
+	_player.main_deck_card_serializable_array.shuffle()
 	_player.main_deck_card_serializable_array_original_size = _player.main_deck_card_serializable_array.size()
 	#-------------------------------------------------------------------------------
-	_player.extra_deck_card_serializable_array = Create_Card_Serializable_Array_for_Card_Resource_Array(_player.extra_deck_card_resource_array)
+	_player.extra_deck_card_serializable_array = Create_Card_Serializable_Array_for_Card_Resource_Array(_player, _player.extra_deck_card_resource_array)
+	_player.extra_deck_card_serializable_array.shuffle()
 	_player.extra_deck_card_serializable_array_original_size = _player.extra_deck_card_serializable_array.size()
 	#-------------------------------------------------------------------------------
 	Set_Card_Slot_Node_2D_Array(_player.Get_Magic_Card_Slot_Array())
@@ -281,7 +292,7 @@ func Set_Player(_player:Player_Node_2D):
 	Set_Removed_Deck_Label(_player)
 	#-------------------------------------------------------------------------------
 	for _i in _player.hand_card_node_2d_array.size():
-		Set_Card_Node_2D(_player, _player.hand_card_node_2d_array[_i])
+		Set_Card_Node_2D(_player.hand_card_node_2d_array[_i])
 	#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 func Set_Card_Slot_Node_2D_Array(_card_slot_node_2d_array:Array[Card_Slot_Node_2D]):
@@ -289,23 +300,25 @@ func Set_Card_Slot_Node_2D_Array(_card_slot_node_2d_array:Array[Card_Slot_Node_2
 		Set_Card_Slot_Node_2D(_card_slot_node_2d_array[_i])
 #-------------------------------------------------------------------------------
 func Set_Card_Slot_Node_2D(_card_slot_node_2d:Card_Slot_Node_2D):
-	_card_slot_node_2d.panel.hide()
+	_card_slot_node_2d.highlighted_panel.hide()
+	_card_slot_node_2d.selected_panel.hide()
 	#-------------------------------------------------------------------------------
 	_card_slot_node_2d.highlighted = func():
-		_card_slot_node_2d.panel.show()
+		_card_slot_node_2d.highlighted_panel.show()
 	#-------------------------------------------------------------------------------
 	_card_slot_node_2d.des_highlighted = func():
-		_card_slot_node_2d.panel.hide()
+		_card_slot_node_2d.highlighted_panel.hide()
 	#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 func Set_Deck_Node_2D(_deck_slot_node_2d:Deck_Slot_Node_2D):
-	_deck_slot_node_2d.panel.hide()
+	_deck_slot_node_2d.highlighted_panel.hide()
+	_deck_slot_node_2d.selected_panel.hide()
 	#-------------------------------------------------------------------------------
 	_deck_slot_node_2d.highlighted = func():
-		_deck_slot_node_2d.panel.show()
+		_deck_slot_node_2d.highlighted_panel.show()
 	#-------------------------------------------------------------------------------
 	_deck_slot_node_2d.des_highlighted = func():
-		_deck_slot_node_2d.panel.hide()
+		_deck_slot_node_2d.highlighted_panel.hide()
 	#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 func Set_Main_Deck_Label(_player: Player_Node_2D):
@@ -326,7 +339,7 @@ func Set_Deck_Label_1(_deck_slot_node_2d:Deck_Slot_Node_2D, _i:int, _original_si
 func Set_Deck_Label_0(_deck_slot_node_2d:Deck_Slot_Node_2D, _i:int):
 	_deck_slot_node_2d.label.text = str(_i)
 #-------------------------------------------------------------------------------
-func Set_Card_Node_2D(_player:Player_Node_2D, _card_node_2d:Card_Node_2D):
+func Set_Card_Node_2D(_card_node_2d:Card_Node_2D):
 	#-------------------------------------------------------------------------------
 	_card_node_2d.highlighted = func():
 		#-------------------------------------------------------------------------------
@@ -349,12 +362,9 @@ func Set_Card_Node_2D(_player:Player_Node_2D, _card_node_2d:Card_Node_2D):
 	_card_node_2d.selected = func():
 		Set_Card_Info(_card_node_2d.card_serializable)
 		#-------------------------------------------------------------------------------
-		if(Is_Player_1(_player)):
+		if(Is_Player_1(_card_node_2d.card_serializable.player_owner)):
+			Hand_Menu_Open(_card_node_2d)
 			_card_node_2d.card_serializable.effect.Card_Pressed_in_Hand(_card_node_2d.card_serializable)
-			#-------------------------------------------------------------------------------
-			card_button_root.reparent(_card_node_2d)
-			card_button_root.global_position = _card_node_2d.global_position + Vector2(0.0, -180.0)
-			card_button_root.show()
 		#-------------------------------------------------------------------------------
 		_card_node_2d.z_index = 3
 		var _tween: Tween = create_tween()
@@ -363,7 +373,7 @@ func Set_Card_Node_2D(_player:Player_Node_2D, _card_node_2d:Card_Node_2D):
 	#-------------------------------------------------------------------------------
 	_card_node_2d.des_selected = func():
 		#-------------------------------------------------------------------------------
-		if(Is_Player_1(_player)):
+		if(Is_Player_1(_card_node_2d.card_serializable.player_owner)):
 			card_button_root.hide()
 		#-------------------------------------------------------------------------------
 		_card_node_2d.z_index = 1
@@ -372,12 +382,32 @@ func Set_Card_Node_2D(_player:Player_Node_2D, _card_node_2d:Card_Node_2D):
 		_tween.parallel().tween_property(_card_node_2d.offset, "scale", Vector2(1, 1), 0.05)
 	#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
-func Create_Card_Serializable_Array_for_Card_Resource_Array(_card_resource_array:Array[Card_Resource]) -> Array[Card_Serializable]:
+func Hand_Menu_Open(_card_node_2d:Card_Node_2D):
+	card_button_root.reparent(_card_node_2d)
+	card_button_root.global_position = _card_node_2d.global_position + Vector2(0.0, -180.0)
+	#-------------------------------------------------------------------------------
+	if(_card_node_2d.card_serializable.myCARTA == Card_Resource.CARTA.MONSTRUO):
+		card_button_array[0].text = "Attack\nPositon"
+		singleton.Set_Button(card_button_array[0], singleton.Common_Selected, func():Summon_in_Attack_Button_Submit(card_button_array[0], _card_node_2d))
+		card_button_array[1].text = "Defense\nPositon"
+		singleton.Set_Button(card_button_array[1], singleton.Common_Selected, func():Summon_in_Defense_Button_Submit(card_button_array[0], _card_node_2d))
+	#-------------------------------------------------------------------------------
+	else:
+		card_button_array[0].text = "Activate"
+		singleton.Set_Button(card_button_array[0], singleton.Common_Selected, func():Activate_Button_Submit(card_button_array[0], _card_node_2d))
+		card_button_array[1].text = "Set"
+		singleton.Set_Button(card_button_array[1], singleton.Common_Selected, func():Set_Button_Submit(card_button_array[0], _card_node_2d))
+	#-------------------------------------------------------------------------------
+	card_button_root.show()
+#-------------------------------------------------------------------------------
+func Create_Card_Serializable_Array_for_Card_Resource_Array(_player_onde_2d:Player_Node_2D, _card_resource_array:Array[Card_Resource]) -> Array[Card_Serializable]:
 	var _card_serializable_array: Array[Card_Serializable]
 	#-------------------------------------------------------------------------------
 	for _i in _card_resource_array.size():
 		var _card_serializable: Card_Serializable = Card_Serializable.new()
 		_card_serializable.Set_Variables_from_Resource(_card_resource_array[_i])
+		_card_serializable.player_owner = _player_onde_2d
+		_card_serializable.player_original_owner = _player_onde_2d
 		_card_serializable_array.append(_card_serializable)
 	#-------------------------------------------------------------------------------
 	return _card_serializable_array
@@ -401,7 +431,7 @@ func Draw_1_Card(_player:Player_Node_2D):
 		#-------------------------------------------------------------------------------
 		_card_node_2d.card_serializable = _card_serializable
 		Set_Card_Control_with_Card_Serializable(_card_node_2d.card_control, _card_serializable)
-		Set_Card_Node_2D(_player, _card_node_2d)
+		Set_Card_Node_2D(_card_node_2d)
 		#-------------------------------------------------------------------------------
 		if(Is_Player_1(_player)):
 			_player.hand_card_node_2d_array.push_back(_card_node_2d)
@@ -446,22 +476,35 @@ func Set_Card_Info(_card_serializable:Card_Serializable):
 	Set_Card_Control_with_Card_Serializable(card_info, _card_serializable)
 	card_info_richtext_stats.text = Get_Card_Stats(_card_serializable)
 	card_info_richtext_effect.text = Get_Card_Effect(_card_serializable)
+	card_info_richtext_effect.get_v_scroll_bar().value = 0
 #-------------------------------------------------------------------------------
 func Get_Card_Stats(_card_serializable:Card_Serializable) -> String:
 	var _s: String = ""
-	_s += "[lb] "
-	_s += str(Card_Resource.ATRIBUTO.keys()[_card_serializable.myATRIBUTO])
-	_s += " - "
-	_s += str(Card_Resource.TIPO.keys()[_card_serializable.myTIPO])
-	_s += " - "
-	_s += "Lv." + str(_card_serializable.level)
-	_s += " [rb]"
-	_s += "\n"
-	_s += "Attack: " + str(_card_serializable.attack)
-	#_s += "\n"
-	_s += "  //  "
-	_s += "Defense: " + str(_card_serializable.defense)
-	#_s += "\n"
+	#-------------------------------------------------------------------------------
+	if(_card_serializable.myCARTA == Card_Resource.CARTA.MONSTRUO or _card_serializable.myCARTA == Card_Resource.CARTA.FUSION):
+		_s += "[lb] "
+		_s += str(Card_Resource.ATRIBUTO.keys()[_card_serializable.myATRIBUTO])
+		_s += " - "
+		_s += str(Card_Resource.TIPO.keys()[_card_serializable.myTIPO])
+		_s += " - "
+		_s += "Lv." + str(_card_serializable.level)
+		_s += " [rb]"
+		_s += "\n"
+		_s += "Attack: " + str(_card_serializable.attack)
+		#_s += "\n"
+		_s += "  //  "
+		_s += "Defense: " + str(_card_serializable.defense)
+		#_s += "\n"
+	#-------------------------------------------------------------------------------
+	else:
+		_s += "[lb] "
+		_s += str(Card_Resource.MAGIC_TYPE.keys()[_card_serializable.myMAGIC_TYPE])
+		_s += " - "
+		_s += str(Card_Resource.CARTA.keys()[_card_serializable.myCARTA])
+		_s += " [rb]"
+		_s += "\n"
+		_s += " "
+	#-------------------------------------------------------------------------------
 	return _s
 #-------------------------------------------------------------------------------
 func Get_Card_Effect(_card_serializable:Card_Serializable) -> String:
@@ -486,4 +529,65 @@ func get_resource_filename(_resource: Resource) -> String:
 #-------------------------------------------------------------------------------
 func get_instance_filename(_node: Node) -> String:
 	return _node.scene_file_path.get_file().trim_suffix('.tscn')
+#-------------------------------------------------------------------------------
+func Phase_Button_Submit(_button:Button):
+	#-------------------------------------------------------------------------------
+	if(last_selected_interactable_node_2d != null):
+		last_selected_interactable_node_2d.des_selected.call()
+		last_selected_interactable_node_2d = null
+	#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+func Summon_in_Attack_Button_Submit(_button:Button, _card_node_2d:Card_Node_2D):
+	var _player: Player_Node_2D = _card_node_2d.card_serializable.player_owner
+	#-------------------------------------------------------------------------------
+	Disable_All_Card_Slots(_player)
+	Enable_Card_Slot_Node_2d_Array(_player.Get_Monster_Card_Slot_Array())
+	#-------------------------------------------------------------------------------
+	last_selected_interactable_node_2d.des_selected.call()
+	last_selected_interactable_node_2d = null
+#-------------------------------------------------------------------------------
+func Summon_in_Defense_Button_Submit(_button:Button, _card_node_2d:Card_Node_2D):
+	var _player: Player_Node_2D = _card_node_2d.card_serializable.player_owner
+	#-------------------------------------------------------------------------------
+	Disable_All_Card_Slots(_player)
+	Enable_Card_Slot_Node_2d_Array(_player.Get_Monster_Card_Slot_Array())
+	#-------------------------------------------------------------------------------
+	last_selected_interactable_node_2d.des_selected.call()
+	last_selected_interactable_node_2d = null
+#-------------------------------------------------------------------------------
+func Activate_Button_Submit(_button:Button, _card_node_2d:Card_Node_2D):
+	var _player: Player_Node_2D = _card_node_2d.card_serializable.player_owner
+	#-------------------------------------------------------------------------------
+	Disable_All_Card_Slots(_player)
+	Enable_Card_Slot_Node_2d_Array(_player.Get_Magic_Card_Slot_Array())
+	#-------------------------------------------------------------------------------
+	last_selected_interactable_node_2d.des_selected.call()
+	last_selected_interactable_node_2d = null
+#-------------------------------------------------------------------------------
+func Set_Button_Submit(_button:Button, _card_node_2d:Card_Node_2D):
+	var _player: Player_Node_2D = _card_node_2d.card_serializable.player_owner
+	#-------------------------------------------------------------------------------
+	Disable_All_Card_Slots(_player)
+	Enable_Card_Slot_Node_2d_Array(_player.Get_Magic_Card_Slot_Array())
+	#-------------------------------------------------------------------------------
+	last_selected_interactable_node_2d.des_selected.call()
+	last_selected_interactable_node_2d = null
+#-------------------------------------------------------------------------------
+func Enable_Card_Slot_Node_2d_Array(_card_slot_node_2d_array: Array[Card_Slot_Node_2D]):
+	#-------------------------------------------------------------------------------
+	for _i in _card_slot_node_2d_array.size():
+		_card_slot_node_2d_array[_i].normal_panel.hide()
+		_card_slot_node_2d_array[_i].selected_panel.show()
+	#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+func Disable_All_Card_Slots(_player:Player_Node_2D):
+	Disable_Card_Slot_Node_2d_Array(_player.Get_Monster_Card_Slot_Array())
+	Disable_Card_Slot_Node_2d_Array(_player.Get_Magic_Card_Slot_Array())
+#-------------------------------------------------------------------------------
+func Disable_Card_Slot_Node_2d_Array(_card_slot_node_2d_array: Array[Card_Slot_Node_2D]):
+	#-------------------------------------------------------------------------------
+	for _i in _card_slot_node_2d_array.size():
+		_card_slot_node_2d_array[_i].normal_panel.show()
+		_card_slot_node_2d_array[_i].selected_panel.hide()
+	#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------

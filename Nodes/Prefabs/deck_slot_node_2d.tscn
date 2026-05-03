@@ -2,19 +2,39 @@
 
 [ext_resource type="Script" uid="uid://v6y0eljxdy2k" path="res://Scripts/Prefabs/deck_slot_node_2d.gd" id="1_o1fv8"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_o1fv8"]
+bg_color = Color(0, 0, 0, 0.60784316)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_i66o4"]
+bg_color = Color(1, 1, 1, 0)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(1, 1, 1, 0.60784316)
+expand_margin_left = 4.0
+expand_margin_top = 4.0
+expand_margin_right = 4.0
+expand_margin_bottom = 4.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_isf5s"]
+bg_color = Color(0.6, 0.6, 0, 0.60784316)
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_7vcad"]
 size = Vector2(80, 128)
 
-[node name="Deck_Slot_Node_2D" type="Node2D" unique_id=471059926 node_paths=PackedStringArray("panel", "label")]
+[node name="Deck_Slot_Node_2D" type="Node2D" unique_id=471059926 node_paths=PackedStringArray("normal_panel", "highlighted_panel", "selected_panel", "label")]
 script = ExtResource("1_o1fv8")
-panel = NodePath("offset/Area2D/Panel2")
+normal_panel = NodePath("offset/Area2D/Normal_Panel")
+highlighted_panel = NodePath("offset/Area2D/Highlighted_Panel")
+selected_panel = NodePath("offset/Area2D/Selected_Panel")
 label = NodePath("offset/Area2D/Label")
 
 [node name="offset" type="Node2D" parent="." unique_id=637960756]
 
 [node name="Area2D" type="Area2D" parent="offset" unique_id=1455938775]
 
-[node name="Panel" type="Panel" parent="offset/Area2D" unique_id=261027485]
+[node name="Normal_Panel" type="Panel" parent="offset/Area2D" unique_id=261027485]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -27,21 +47,32 @@ offset_bottom = 64.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_o1fv8")
 
-[node name="Panel2" type="Panel" parent="offset/Area2D" unique_id=458070180]
-self_modulate = Color(1, 1, 0, 1)
+[node name="Highlighted_Panel" type="Panel" parent="offset/Area2D" unique_id=458070180]
+visible = false
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -32.0
-offset_top = -56.0
-offset_right = 32.0
-offset_bottom = 56.0
+offset_left = -40.0
+offset_top = -64.0
+offset_right = 40.0
+offset_bottom = 64.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_i66o4")
+
+[node name="Selected_Panel" type="Panel" parent="offset/Area2D" unique_id=26772843]
+visible = false
+offset_left = -40.0
+offset_top = -64.0
+offset_right = 40.0
+offset_bottom = 64.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_isf5s")
 
 [node name="Label" type="Label" parent="offset/Area2D" unique_id=89206077]
 anchors_preset = 15

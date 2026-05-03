@@ -3,6 +3,9 @@ class_name Card_Serializable
 #-------------------------------------------------------------------------------
 @export var card_resource: Card_Resource
 #-------------------------------------------------------------------------------
+var player_original_owner: Player_Node_2D
+var player_owner: Player_Node_2D
+#-------------------------------------------------------------------------------
 var myCARTA: Card_Resource.CARTA
 var myARQUETIPO: Array[Card_Resource.ARQUETIPO]
 var effect: Card_Effect

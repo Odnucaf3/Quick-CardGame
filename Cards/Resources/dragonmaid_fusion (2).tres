@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="Card_Resource" format=3 uid="uid://p6f7nbqlh47n"]
+
+[ext_resource type="Texture2D" uid="uid://bkaooud34fu2d" path="res://Cards/Artworks/dragonmaid_fusion (2).png" id="1_wk1c2"]
+[ext_resource type="Script" uid="uid://dw6842lhjlqnr" path="res://Scripts/Resources/card_resource.gd" id="2_jek07"]
+
+[resource]
+script = ExtResource("2_jek07")
+artwork = ExtResource("1_wk1c2")
+myCARTA = 3
+attack = 3500
+defense = 2000
+level = 9
+myATRIBUTO = 4
+myTIPO = 4
+metadata/_custom_type_script = "uid://dw6842lhjlqnr"

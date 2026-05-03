@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="Card_Resource" format=3 uid="uid://cswsfyo6n47ns"]
+
+[ext_resource type="Texture2D" uid="uid://b0r4uxl12v328" path="res://Cards/Artworks/dragonmaid_magic (3).png" id="1_y1a15"]
+[ext_resource type="Script" uid="uid://dw6842lhjlqnr" path="res://Scripts/Resources/card_resource.gd" id="2_6oogd"]
+
+[resource]
+script = ExtResource("2_6oogd")
+artwork = ExtResource("1_y1a15")
+myCARTA = 1
+metadata/_custom_type_script = "uid://dw6842lhjlqnr"
