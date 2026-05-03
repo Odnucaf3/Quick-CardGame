@@ -10,9 +10,9 @@ config_version=5
 
 [application]
 
-config/name="Quick-CardGame"
-run/main_scene="uid://cfwl8u6p4ahrw"
-config/features=PackedStringArray("4.4", "Mobile")
+config/name="quick-yugioh"
+run/main_scene="res://Nodes/Scenes/game_system.tscn"
+config/features=PackedStringArray("4.6", "Mobile")
 config/icon="res://icon.svg"
 
 [display]
@@ -21,24 +21,20 @@ window/size/viewport_width=1600
 window/size/viewport_height=900
 window/stretch/mode="canvas_items"
 
-[dotnet]
-
-project/assembly_name="cardgame2"
-
 [input]
 
-Right_Click={
-"deadzone": 0.2,
-"events": [Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"button_mask":2,"position":Vector2(104, 15),"global_position":Vector2(113, 63),"factor":1.0,"button_index":2,"canceled":false,"pressed":true,"double_click":false,"script":null)
-]
-}
 Left_Click={
 "deadzone": 0.2,
-"events": [Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"button_mask":1,"position":Vector2(46, 25),"global_position":Vector2(55, 73),"factor":1.0,"button_index":1,"canceled":false,"pressed":true,"double_click":false,"script":null)
+"events": [Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"button_mask":1,"position":Vector2(246, 25),"global_position":Vector2(255, 73),"factor":1.0,"button_index":1,"canceled":false,"pressed":true,"double_click":false,"script":null)
 ]
 }
+
+[physics]
+
+3d/physics_engine="Jolt Physics"
 
 [rendering]
 
 textures/canvas_textures/default_texture_filter=2
+rendering_device/driver.windows="d3d12"
 renderer/rendering_method="mobile"

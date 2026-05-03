@@ -1,0 +1,62 @@
+[gd_scene format=3 uid="uid://bohe7pjbcl1mh"]
+
+[ext_resource type="Script" uid="uid://v6y0eljxdy2k" path="res://Scripts/Prefabs/deck_slot_node_2d.gd" id="1_o1fv8"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_7vcad"]
+size = Vector2(80, 128)
+
+[node name="Deck_Slot_Node_2D" type="Node2D" unique_id=471059926 node_paths=PackedStringArray("panel", "label")]
+script = ExtResource("1_o1fv8")
+panel = NodePath("offset/Area2D/Panel2")
+label = NodePath("offset/Area2D/Label")
+
+[node name="offset" type="Node2D" parent="." unique_id=637960756]
+
+[node name="Area2D" type="Area2D" parent="offset" unique_id=1455938775]
+
+[node name="Panel" type="Panel" parent="offset/Area2D" unique_id=261027485]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -64.0
+offset_right = 40.0
+offset_bottom = 64.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Panel2" type="Panel" parent="offset/Area2D" unique_id=458070180]
+self_modulate = Color(1, 1, 0, 1)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.0
+offset_top = -56.0
+offset_right = 32.0
+offset_bottom = 56.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Label" type="Label" parent="offset/Area2D" unique_id=89206077]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -40.0
+offset_top = -64.0
+offset_right = 40.0
+offset_bottom = 64.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/outline_size = 3
+text = "40 / 40"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="offset/Area2D" unique_id=124348042]
+shape = SubResource("RectangleShape2D_7vcad")

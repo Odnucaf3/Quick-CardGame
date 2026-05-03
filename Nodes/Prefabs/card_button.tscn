@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://bgfkyrw2n0lxv"]
+
+[ext_resource type="PackedScene" uid="uid://wum5a72dssgb" path="res://Nodes/Prefabs/card_control.tscn" id="1_jwms2"]
+
+[node name="Card_Button" type="Button" unique_id=1426445735]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -60.0
+offset_top = -80.0
+offset_right = 60.0
+offset_bottom = 80.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Card_Control" parent="." unique_id=118479895 instance=ExtResource("1_jwms2")]
+layout_mode = 1
+anchors_preset = 15
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 0.0
+offset_bottom = 0.0

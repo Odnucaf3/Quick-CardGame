@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://dtdgeo8enodna"]
+
+[ext_resource type="Script" uid="uid://ddb2iebag6hux" path="res://Scripts/Prefabs/card_node_2d.gd" id="1_24ha6"]
+[ext_resource type="PackedScene" uid="uid://wum5a72dssgb" path="res://Nodes/Prefabs/card_control.tscn" id="4_7b608"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_61w3p"]
+size = Vector2(136, 192)
+
+[node name="Card_Node_2D" type="Node2D" unique_id=434170569 node_paths=PackedStringArray("card_control", "offset")]
+z_index = 1
+script = ExtResource("1_24ha6")
+card_control = NodePath("offset/Area2D/Card_Control")
+offset = NodePath("offset")
+
+[node name="offset" type="Node2D" parent="." unique_id=2067035635]
+
+[node name="Area2D" type="Area2D" parent="offset" unique_id=830252469]
+
+[node name="Card_Control" parent="offset/Area2D" unique_id=118479895 instance=ExtResource("4_7b608")]
+offset_left = -68.0
+offset_top = -96.0
+offset_right = 68.0
+offset_bottom = 96.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="offset/Area2D" unique_id=1271137090]
+shape = SubResource("RectangleShape2D_61w3p")

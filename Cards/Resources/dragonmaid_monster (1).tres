@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="Card_Resource" format=3 uid="uid://dkk77u7fipfk8"]
+
+[ext_resource type="Script" uid="uid://dw6842lhjlqnr" path="res://Scripts/Resources/card_resource.gd" id="1_tena4"]
+[ext_resource type="Texture2D" uid="uid://e6ylcuatixl8" path="res://Cards/Artworks/dragonmaid_monster (1).png" id="1_vciba"]
+
+[resource]
+script = ExtResource("1_tena4")
+artwork = ExtResource("1_vciba")
+attack = 500
+defense = 1700
+level = 3
+myATRIBUTO = 3
+myTIPO = 4
+metadata/_custom_type_script = "uid://dw6842lhjlqnr"
