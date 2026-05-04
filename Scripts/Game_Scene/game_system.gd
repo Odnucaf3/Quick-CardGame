@@ -33,7 +33,6 @@ var focused_control: Control
 var interactable_node_2d_array: Array[Interactable_Node_2D]
 var highlighted_interactable_node_2d: Interactable_Node_2D
 var new_selected_interactable_node_2d: Interactable_Node_2D
-var last_selected_interactable_node_2d: Interactable_Node_2D
 #-------------------------------------------------------------------------------
 @export var world_2d: Node2D
 var screen_size: Vector2
@@ -42,6 +41,9 @@ var space_state: PhysicsDirectSpaceState2D
 #-------------------------------------------------------------------------------
 var is_left_mouse_pressed: bool = false
 var left_mouse_counter: int = 0
+#-------------------------------------------------------------------------------
+var nothing_selected: Callable = func():pass
+var nothing_canceled: Callable = func():pass
 #-------------------------------------------------------------------------------
 #endregion
 #-------------------------------------------------------------------------------
@@ -63,13 +65,13 @@ func _ready() -> void:
 	Set_Player(player_2)
 	#-------------------------------------------------------------------------------
 	card_button_root.hide()
-	singleton.Set_Button(phase_button, func():singleton.Common_Selected(), func():Phase_Button_Submit(phase_button))
 	#-------------------------------------------------------------------------------
 	await Seconds(0.5)
 	Draw_X_Cards(player_1, 5)
 	await Draw_X_Cards(player_2, 5)
 	await Seconds(0.5)
 	await Draw_1_Card(player_1)
+	MainPhase1_Idle()
 #-------------------------------------------------------------------------------
 func _physics_process(_delta: float) -> void:
 	hovered_control = get_viewport().gui_get_hovered_control()
@@ -100,8 +102,6 @@ func Get_Debug_Text() -> String:
 	_s += "\n"
 	_s += "New Selected Interactable Node 2D: " + str(new_selected_interactable_node_2d)
 	_s += "\n"
-	_s += "Last Selected Interactable Node 2D: " + str(last_selected_interactable_node_2d)
-	_s += "\n"
 	_s += "#----------------------------------------------------"
 	_s += "\n"
 	_s += "Is Left Clicked: " + str(is_left_mouse_pressed)
@@ -131,6 +131,7 @@ func Get_FPS():
 func StateMachine():
 	StateMachine_Highlighted()
 	StateMachine_Selected()
+	StateMachine_Canceled()
 #-------------------------------------------------------------------------------
 func StateMachine_Highlighted():
 	#-------------------------------------------------------------------------------
@@ -206,15 +207,14 @@ func StateMachine_Selected():
 		if(Input.is_action_just_released("Left_Click")):
 			is_left_mouse_pressed = false
 			#-------------------------------------------------------------------------------
-			if(new_selected_interactable_node_2d == highlighted_interactable_node_2d and new_selected_interactable_node_2d != last_selected_interactable_node_2d):
-				#-------------------------------------------------------------------------------
-				if(last_selected_interactable_node_2d != null):
-					last_selected_interactable_node_2d.des_selected.call()
+			if(new_selected_interactable_node_2d == highlighted_interactable_node_2d):
 				#-------------------------------------------------------------------------------
 				if(new_selected_interactable_node_2d != null):
 					new_selected_interactable_node_2d.selected.call()
 				#-------------------------------------------------------------------------------
-				last_selected_interactable_node_2d = new_selected_interactable_node_2d
+				else:
+					nothing_selected.call()
+				#-------------------------------------------------------------------------------
 			#-------------------------------------------------------------------------------
 		#-------------------------------------------------------------------------------
 	#-------------------------------------------------------------------------------
@@ -225,6 +225,14 @@ func StateMachine_Selected():
 			is_left_mouse_pressed = true
 			left_mouse_counter = 0
 		#-------------------------------------------------------------------------------
+	#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+func StateMachine_Canceled():
+	if(hovered_control != null):
+		return
+	#-------------------------------------------------------------------------------
+	if(Input.is_action_just_released("Right_Click")):
+		nothing_canceled.call()
 	#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 func Set_Card_Control_with_Card_Serializable(_card_control:Card_Control, _card_serializable:Card_Serializable):
@@ -276,49 +284,32 @@ func Set_Player(_player:Player_Node_2D):
 	_player.extra_deck_card_serializable_array.shuffle()
 	_player.extra_deck_card_serializable_array_original_size = _player.extra_deck_card_serializable_array.size()
 	#-------------------------------------------------------------------------------
-	Set_Card_Slot_Node_2D_Array(_player.Get_Magic_Card_Slot_Array())
-	Set_Card_Slot_Node_2D_Array(_player.Get_Monster_Card_Slot_Array())
+	for _i in _player.magic_card_slot_node_2d_array.size():
+		_player.magic_card_slot_node_2d_array[_i].highlighted_panel.hide()
+		_player.magic_card_slot_node_2d_array[_i].selected_panel.hide()
 	#-------------------------------------------------------------------------------
-	Set_Deck_Node_2D(_player.main_deck_node_2d)
+	for _i in _player.monster_card_slot_node_2d_array.size():
+		_player.monster_card_slot_node_2d_array[_i].highlighted_panel.hide()
+		_player.monster_card_slot_node_2d_array[_i].selected_panel.hide()
+	#-------------------------------------------------------------------------------
+	_player.main_deck_node_2d.highlighted_panel.hide()
+	_player.main_deck_node_2d.selected_panel.hide()
 	Set_Main_Deck_Label(_player)
 	#-------------------------------------------------------------------------------
-	Set_Deck_Node_2D(_player.extra_deck_node_2d)
+	_player.extra_deck_node_2d.highlighted_panel.hide()
+	_player.extra_deck_node_2d.selected_panel.hide()
 	Set_Extra_Deck_Label(_player)
 	#-------------------------------------------------------------------------------
-	Set_Deck_Node_2D(_player.grave_deck_node_2d)
+	_player.grave_deck_node_2d.highlighted_panel.hide()
+	_player.grave_deck_node_2d.selected_panel.hide()
 	Set_Grave_Deck_Label(_player)
 	#-------------------------------------------------------------------------------
-	Set_Deck_Node_2D(_player.removed_deck_node_2d)
+	_player.removed_deck_node_2d.highlighted_panel.hide()
+	_player.removed_deck_node_2d.selected_panel.hide()
 	Set_Removed_Deck_Label(_player)
 	#-------------------------------------------------------------------------------
 	for _i in _player.hand_card_node_2d_array.size():
-		Set_Card_Node_2D(_player.hand_card_node_2d_array[_i])
-	#-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
-func Set_Card_Slot_Node_2D_Array(_card_slot_node_2d_array:Array[Card_Slot_Node_2D]):
-	for _i in _card_slot_node_2d_array.size():
-		Set_Card_Slot_Node_2D(_card_slot_node_2d_array[_i])
-#-------------------------------------------------------------------------------
-func Set_Card_Slot_Node_2D(_card_slot_node_2d:Card_Slot_Node_2D):
-	_card_slot_node_2d.highlighted_panel.hide()
-	_card_slot_node_2d.selected_panel.hide()
-	#-------------------------------------------------------------------------------
-	_card_slot_node_2d.highlighted = func():
-		_card_slot_node_2d.highlighted_panel.show()
-	#-------------------------------------------------------------------------------
-	_card_slot_node_2d.des_highlighted = func():
-		_card_slot_node_2d.highlighted_panel.hide()
-	#-------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------
-func Set_Deck_Node_2D(_deck_slot_node_2d:Deck_Slot_Node_2D):
-	_deck_slot_node_2d.highlighted_panel.hide()
-	_deck_slot_node_2d.selected_panel.hide()
-	#-------------------------------------------------------------------------------
-	_deck_slot_node_2d.highlighted = func():
-		_deck_slot_node_2d.highlighted_panel.show()
-	#-------------------------------------------------------------------------------
-	_deck_slot_node_2d.des_highlighted = func():
-		_deck_slot_node_2d.highlighted_panel.hide()
+		Set_Card_Node_2D_Highlighted(_player.hand_card_node_2d_array[_i])
 	#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 func Set_Main_Deck_Label(_player: Player_Node_2D):
@@ -339,66 +330,69 @@ func Set_Deck_Label_1(_deck_slot_node_2d:Deck_Slot_Node_2D, _i:int, _original_si
 func Set_Deck_Label_0(_deck_slot_node_2d:Deck_Slot_Node_2D, _i:int):
 	_deck_slot_node_2d.label.text = str(_i)
 #-------------------------------------------------------------------------------
-func Set_Card_Node_2D(_card_node_2d:Card_Node_2D):
+#endregion
+#-------------------------------------------------------------------------------
+#region HIGHLIGHTED FUNCTIONS
+#-------------------------------------------------------------------------------
+func Set_Highlighted_in_Table():
+	Set_Highlighted_in_Table_Player(player_1)
+	Set_Highlighted_in_Table_Player(player_2)
+#-------------------------------------------------------------------------------
+func Set_Highlighted_in_Table_Player(_player:Player_Node_2D):
+	Set_Deck_Node_2D_Highlighted(_player.main_deck_node_2d)
+	Set_Deck_Node_2D_Highlighted(_player.extra_deck_node_2d)
+	Set_Deck_Node_2D_Highlighted(_player.grave_deck_node_2d)
+	Set_Deck_Node_2D_Highlighted(_player.removed_deck_node_2d)
+	#-------------------------------------------------------------------------------
+	Set_Card_Slot_Node_2D_Array_Highlighted(_player.magic_card_slot_node_2d_array)
+	Set_Card_Slot_Node_2D_Array_Highlighted(_player.monster_card_slot_node_2d_array)
+	#-------------------------------------------------------------------------------
+	Set_Card_Node_2D_Array_Highlighted(_player.hand_card_node_2d_array)
+#-------------------------------------------------------------------------------
+func Set_Card_Slot_Node_2D_Array_Highlighted(_card_slot_node_2d_array:Array[Card_Slot_Node_2D]):
+	for _i in _card_slot_node_2d_array.size():
+		Set_Card_Slot_Node_2D_Highlighted(_card_slot_node_2d_array[_i])
+#-------------------------------------------------------------------------------
+func Set_Card_Slot_Node_2D_Highlighted(_card_slot_node_2d:Card_Slot_Node_2D):
+	#-------------------------------------------------------------------------------
+	_card_slot_node_2d.highlighted = func():
+		_card_slot_node_2d.highlighted_panel.show()
+	#-------------------------------------------------------------------------------
+	_card_slot_node_2d.des_highlighted = func():
+		_card_slot_node_2d.highlighted_panel.hide()
+	#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+func Set_Deck_Node_2D_Highlighted(_deck_slot_node_2d:Deck_Slot_Node_2D):
+	#-------------------------------------------------------------------------------
+	_deck_slot_node_2d.highlighted = func():
+		_deck_slot_node_2d.highlighted_panel.show()
+	#-------------------------------------------------------------------------------
+	_deck_slot_node_2d.des_highlighted = func():
+		_deck_slot_node_2d.highlighted_panel.hide()
+	#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+func Set_Card_Node_2D_Array_Highlighted(_card_node_2d_array:Array[Card_Node_2D]):
+	#-------------------------------------------------------------------------------
+	for _i in _card_node_2d_array.size():
+		Set_Card_Node_2D_Highlighted(_card_node_2d_array[_i])
+	#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+func Set_Card_Node_2D_Highlighted(_card_node_2d:Card_Node_2D):
 	#-------------------------------------------------------------------------------
 	_card_node_2d.highlighted = func():
-		#-------------------------------------------------------------------------------
-		if(_card_node_2d != last_selected_interactable_node_2d):
-			_card_node_2d.z_index = 2
-			var _tween: Tween = create_tween()
-			_tween.tween_property(_card_node_2d.offset, "position", Vector2(0, -30), 0.05)
-			_tween.parallel().tween_property(_card_node_2d.offset, "scale", Vector2(1.1, 1.1), 0.05)
-		#-------------------------------------------------------------------------------
+		_card_node_2d.z_index = 2
+		var _tween: Tween = create_tween()
+		_tween.tween_property(_card_node_2d.offset, "position", Vector2(0, -30), 0.05)
+		_tween.parallel().tween_property(_card_node_2d.offset, "scale", Vector2(1.1, 1.1), 0.05)
 	#-------------------------------------------------------------------------------
 	_card_node_2d.des_highlighted = func():
-		#-------------------------------------------------------------------------------
-		if(_card_node_2d != last_selected_interactable_node_2d):
-			_card_node_2d.z_index = 1
-			var _tween: Tween = create_tween()
-			_tween.tween_property(_card_node_2d.offset, "position", Vector2(0, 0), 0.05)
-			_tween.parallel().tween_property(_card_node_2d.offset, "scale", Vector2(1, 1), 0.05)
-		#-------------------------------------------------------------------------------
-	#-------------------------------------------------------------------------------
-	_card_node_2d.selected = func():
-		Set_Card_Info(_card_node_2d.card_serializable)
-		#-------------------------------------------------------------------------------
-		if(Is_Player_1(_card_node_2d.card_serializable.player_owner)):
-			Hand_Menu_Open(_card_node_2d)
-			_card_node_2d.card_serializable.effect.Card_Pressed_in_Hand(_card_node_2d.card_serializable)
-		#-------------------------------------------------------------------------------
-		_card_node_2d.z_index = 3
-		var _tween: Tween = create_tween()
-		_tween.tween_property(_card_node_2d.offset, "position", Vector2(0, -70), 0.05)
-		_tween.parallel().tween_property(_card_node_2d.offset, "scale", Vector2(1.2, 1.2), 0.05)
-	#-------------------------------------------------------------------------------
-	_card_node_2d.des_selected = func():
-		#-------------------------------------------------------------------------------
-		if(Is_Player_1(_card_node_2d.card_serializable.player_owner)):
-			card_button_root.hide()
-		#-------------------------------------------------------------------------------
 		_card_node_2d.z_index = 1
 		var _tween: Tween = create_tween()
 		_tween.tween_property(_card_node_2d.offset, "position", Vector2(0, 0), 0.05)
 		_tween.parallel().tween_property(_card_node_2d.offset, "scale", Vector2(1, 1), 0.05)
 	#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
-func Hand_Menu_Open(_card_node_2d:Card_Node_2D):
-	card_button_root.reparent(_card_node_2d)
-	card_button_root.global_position = _card_node_2d.global_position + Vector2(0.0, -180.0)
-	#-------------------------------------------------------------------------------
-	if(_card_node_2d.card_serializable.myCARTA == Card_Resource.CARTA.MONSTRUO):
-		card_button_array[0].text = "Attack\nPositon"
-		singleton.Set_Button(card_button_array[0], singleton.Common_Selected, func():Summon_in_Attack_Button_Submit(card_button_array[0], _card_node_2d))
-		card_button_array[1].text = "Defense\nPositon"
-		singleton.Set_Button(card_button_array[1], singleton.Common_Selected, func():Summon_in_Defense_Button_Submit(card_button_array[0], _card_node_2d))
-	#-------------------------------------------------------------------------------
-	else:
-		card_button_array[0].text = "Activate"
-		singleton.Set_Button(card_button_array[0], singleton.Common_Selected, func():Activate_Button_Submit(card_button_array[0], _card_node_2d))
-		card_button_array[1].text = "Set"
-		singleton.Set_Button(card_button_array[1], singleton.Common_Selected, func():Set_Button_Submit(card_button_array[0], _card_node_2d))
-	#-------------------------------------------------------------------------------
-	card_button_root.show()
+#endregion
 #-------------------------------------------------------------------------------
 func Create_Card_Serializable_Array_for_Card_Resource_Array(_player_onde_2d:Player_Node_2D, _card_resource_array:Array[Card_Resource]) -> Array[Card_Serializable]:
 	var _card_serializable_array: Array[Card_Serializable]
@@ -411,8 +405,6 @@ func Create_Card_Serializable_Array_for_Card_Resource_Array(_player_onde_2d:Play
 		_card_serializable_array.append(_card_serializable)
 	#-------------------------------------------------------------------------------
 	return _card_serializable_array
-#-------------------------------------------------------------------------------
-#endregion
 #-------------------------------------------------------------------------------
 func Draw_X_Cards(_player:Player_Node_2D, _num: int):
 	#-------------------------------------------------------------------------------
@@ -431,7 +423,7 @@ func Draw_1_Card(_player:Player_Node_2D):
 		#-------------------------------------------------------------------------------
 		_card_node_2d.card_serializable = _card_serializable
 		Set_Card_Control_with_Card_Serializable(_card_node_2d.card_control, _card_serializable)
-		Set_Card_Node_2D(_card_node_2d)
+		Set_Card_Node_2D_Highlighted(_card_node_2d)
 		#-------------------------------------------------------------------------------
 		if(Is_Player_1(_player)):
 			_player.hand_card_node_2d_array.push_back(_card_node_2d)
@@ -530,59 +522,233 @@ func get_resource_filename(_resource: Resource) -> String:
 func get_instance_filename(_node: Node) -> String:
 	return _node.scene_file_path.get_file().trim_suffix('.tscn')
 #-------------------------------------------------------------------------------
-func Phase_Button_Submit(_button:Button):
+func MainPhase1_Idle():
+	Set_Highlighted_in_Table()
 	#-------------------------------------------------------------------------------
-	if(last_selected_interactable_node_2d != null):
-		last_selected_interactable_node_2d.des_selected.call()
-		last_selected_interactable_node_2d = null
+	nothing_selected = func():pass
+	nothing_canceled = func():pass
+	#-------------------------------------------------------------------------------
+	player_1.main_deck_node_2d.selected = func():pass
+	player_1.extra_deck_node_2d.selected = func():pass
+	player_1.grave_deck_node_2d.selected = func():pass
+	player_1.removed_deck_node_2d.selected = func():pass
+	#-------------------------------------------------------------------------------
+	for _i in player_1.monster_card_slot_node_2d_array.size():
+		player_1.monster_card_slot_node_2d_array[_i].selected = func():pass
+	#-------------------------------------------------------------------------------
+	for _i in player_1.magic_card_slot_node_2d_array.size():
+		player_1.magic_card_slot_node_2d_array[_i].selected = func():pass
+	#-------------------------------------------------------------------------------
+	for _i in player_1.hand_card_node_2d_array.size():
+		player_1.hand_card_node_2d_array[_i].selected = func(): MainPhase1_from_Idle_to_Hand(player_1.hand_card_node_2d_array[_i])
+	#-------------------------------------------------------------------------------
+	player_2.main_deck_node_2d.selected = func():pass
+	player_2.extra_deck_node_2d.selected = func():pass
+	player_2.grave_deck_node_2d.selected = func():pass
+	player_2.removed_deck_node_2d.selected = func():pass
+	#-------------------------------------------------------------------------------
+	for _i in player_2.monster_card_slot_node_2d_array.size():
+		player_2.monster_card_slot_node_2d_array[_i].selected = func():pass
+	#-------------------------------------------------------------------------------
+	for _i in player_2.magic_card_slot_node_2d_array.size():
+		player_2.magic_card_slot_node_2d_array[_i].selected = func():pass
+	#-------------------------------------------------------------------------------
+	for _i in player_2.hand_card_node_2d_array.size():
+		player_2.hand_card_node_2d_array[_i].selected = func(): MainPhase1_from_Idle_to_Hand(player_2.hand_card_node_2d_array[_i])
 	#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
-func Summon_in_Attack_Button_Submit(_button:Button, _card_node_2d:Card_Node_2D):
-	var _player: Player_Node_2D = _card_node_2d.card_serializable.player_owner
+func MainPhase1_from_Idle_to_Hand(_card_node_2d:Card_Node_2D):
+	MainPhase1_Hand(_card_node_2d)
 	#-------------------------------------------------------------------------------
-	Disable_All_Card_Slots(_player)
-	Enable_Card_Slot_Node_2d_Array(_player.Get_Monster_Card_Slot_Array())
-	#-------------------------------------------------------------------------------
-	last_selected_interactable_node_2d.des_selected.call()
-	last_selected_interactable_node_2d = null
+	Card_in_Hand_Selected(_card_node_2d)
 #-------------------------------------------------------------------------------
-func Summon_in_Defense_Button_Submit(_button:Button, _card_node_2d:Card_Node_2D):
-	var _player: Player_Node_2D = _card_node_2d.card_serializable.player_owner
+func MainPhase1_Hand(_card_node_2d:Card_Node_2D):
+	Set_Highlighted_in_Table()
 	#-------------------------------------------------------------------------------
-	Disable_All_Card_Slots(_player)
-	Enable_Card_Slot_Node_2d_Array(_player.Get_Monster_Card_Slot_Array())
+	nothing_selected = func():MainPhase1_from_Hand_to_Idle(_card_node_2d)
+	nothing_canceled = func():MainPhase1_from_Hand_to_Idle(_card_node_2d)
 	#-------------------------------------------------------------------------------
-	last_selected_interactable_node_2d.des_selected.call()
-	last_selected_interactable_node_2d = null
+	player_1.main_deck_node_2d.selected = func():MainPhase1_from_Hand_to_Idle(_card_node_2d)
+	player_1.extra_deck_node_2d.selected = func():MainPhase1_from_Hand_to_Idle(_card_node_2d)
+	player_1.grave_deck_node_2d.selected = func():MainPhase1_from_Hand_to_Idle(_card_node_2d)
+	player_1.removed_deck_node_2d.selected = func():MainPhase1_from_Hand_to_Idle(_card_node_2d)
+	#-------------------------------------------------------------------------------
+	for _i in player_1.monster_card_slot_node_2d_array.size():
+		player_1.monster_card_slot_node_2d_array[_i].selected = func():MainPhase1_from_Hand_to_Idle(_card_node_2d)
+	#-------------------------------------------------------------------------------
+	for _i in player_1.magic_card_slot_node_2d_array.size():
+		player_1.magic_card_slot_node_2d_array[_i].selected = func():MainPhase1_from_Hand_to_Idle(_card_node_2d)
+	#-------------------------------------------------------------------------------
+	for _i in player_1.hand_card_node_2d_array.size():
+		player_1.hand_card_node_2d_array[_i].selected = func():MainPhase1_from_Hand_to_Hand(_card_node_2d, player_1.hand_card_node_2d_array[_i])
+	#-------------------------------------------------------------------------------
+	player_2.main_deck_node_2d.selected = func():MainPhase1_from_Hand_to_Idle(_card_node_2d)
+	player_2.extra_deck_node_2d.selected = func():MainPhase1_from_Hand_to_Idle(_card_node_2d)
+	player_2.grave_deck_node_2d.selected = func():MainPhase1_from_Hand_to_Idle(_card_node_2d)
+	player_2.removed_deck_node_2d.selected = func():MainPhase1_from_Hand_to_Idle(_card_node_2d)
+	#-------------------------------------------------------------------------------
+	for _i in player_2.monster_card_slot_node_2d_array.size():
+		player_2.monster_card_slot_node_2d_array[_i].selected = func():MainPhase1_from_Hand_to_Idle(_card_node_2d)
+	#-------------------------------------------------------------------------------
+	for _i in player_2.magic_card_slot_node_2d_array.size():
+		player_2.magic_card_slot_node_2d_array[_i].selected = func():MainPhase1_from_Hand_to_Idle(_card_node_2d)
+	#-------------------------------------------------------------------------------
+	for _i in player_2.hand_card_node_2d_array.size():
+		player_2.hand_card_node_2d_array[_i].selected = func():MainPhase1_from_Hand_to_Hand(_card_node_2d, player_2.hand_card_node_2d_array[_i])
 #-------------------------------------------------------------------------------
-func Activate_Button_Submit(_button:Button, _card_node_2d:Card_Node_2D):
-	var _player: Player_Node_2D = _card_node_2d.card_serializable.player_owner
-	#-------------------------------------------------------------------------------
-	Disable_All_Card_Slots(_player)
-	Enable_Card_Slot_Node_2d_Array(_player.Get_Magic_Card_Slot_Array())
-	#-------------------------------------------------------------------------------
-	last_selected_interactable_node_2d.des_selected.call()
-	last_selected_interactable_node_2d = null
+func MainPhase1_from_Hand_to_Hand(_last_card_node_2d:Card_Node_2D, _new_card_node_2d:Card_Node_2D):
+	MainPhase1_Hand(_new_card_node_2d)
+	Card_in_Hand_Des_Selected(_last_card_node_2d)
+	Card_in_Hand_Selected(_new_card_node_2d)
 #-------------------------------------------------------------------------------
-func Set_Button_Submit(_button:Button, _card_node_2d:Card_Node_2D):
-	var _player: Player_Node_2D = _card_node_2d.card_serializable.player_owner
+func MainPhase1_from_Hand_to_Idle(_card_node_2d:Card_Node_2D):
+	MainPhase1_Idle()
 	#-------------------------------------------------------------------------------
-	Disable_All_Card_Slots(_player)
-	Enable_Card_Slot_Node_2d_Array(_player.Get_Magic_Card_Slot_Array())
-	#-------------------------------------------------------------------------------
-	last_selected_interactable_node_2d.des_selected.call()
-	last_selected_interactable_node_2d = null
+	Card_in_Hand_Des_Selected(_card_node_2d)
 #-------------------------------------------------------------------------------
-func Enable_Card_Slot_Node_2d_Array(_card_slot_node_2d_array: Array[Card_Slot_Node_2D]):
+func Card_in_Hand_Selected(_card_node_2d:Card_Node_2D):
+	_card_node_2d.highlighted = func():pass
+	_card_node_2d.des_highlighted = func():pass
+	_card_node_2d.selected = func():pass
 	#-------------------------------------------------------------------------------
-	for _i in _card_slot_node_2d_array.size():
-		_card_slot_node_2d_array[_i].normal_panel.hide()
-		_card_slot_node_2d_array[_i].selected_panel.show()
+	Set_Card_Info(_card_node_2d.card_serializable)
 	#-------------------------------------------------------------------------------
+	if(Is_Player_1(_card_node_2d.card_serializable.player_owner)):
+		Hand_Menu_Open(_card_node_2d)
+		_card_node_2d.card_serializable.effect.Card_Pressed_in_Hand(_card_node_2d.card_serializable)
+	#-------------------------------------------------------------------------------
+	_card_node_2d.z_index = 3
+	var _tween: Tween = create_tween()
+	_tween.tween_property(_card_node_2d.offset, "position", Vector2(0, -70), 0.05)
+	_tween.parallel().tween_property(_card_node_2d.offset, "scale", Vector2(1.2, 1.2), 0.05)
+#-------------------------------------------------------------------------------
+func Hand_Menu_Open(_card_node_2d:Card_Node_2D):
+	card_button_root.reparent(_card_node_2d)
+	card_button_root.global_position = _card_node_2d.global_position + Vector2(0.0, -180.0)
+	#-------------------------------------------------------------------------------
+	if(_card_node_2d.card_serializable.myCARTA == Card_Resource.CARTA.MONSTRUO):
+		card_button_array[0].text = "Attack\nPositon"
+		card_button_array[1].text = "Defense\nPositon"
+	#-------------------------------------------------------------------------------
+	else:
+		card_button_array[0].text = "Activate"
+		card_button_array[1].text = "Set"
+	#-------------------------------------------------------------------------------
+	singleton.Set_Button(card_button_array[0], singleton.Common_Selected, func():MainPhase1_from_Hand_to_Summon(_card_node_2d, true))
+	singleton.Set_Button(card_button_array[1], singleton.Common_Selected, func():MainPhase1_from_Hand_to_Summon(_card_node_2d, false))
+	card_button_root.show()
+#-------------------------------------------------------------------------------
+func Card_in_Hand_Des_Selected(_card_node_2d:Card_Node_2D):
+	#-------------------------------------------------------------------------------
+	if(Is_Player_1(_card_node_2d.card_serializable.player_owner)):
+		card_button_root.hide()
+	#-------------------------------------------------------------------------------
+	_card_node_2d.z_index = 1
+	var _tween: Tween = create_tween()
+	_tween.tween_property(_card_node_2d.offset, "position", Vector2(0, 0), 0.05)
+	_tween.parallel().tween_property(_card_node_2d.offset, "scale", Vector2(1, 1), 0.05)
+#-------------------------------------------------------------------------------
+func MainPhase1_from_Hand_to_Summon(_card_node_2d:Card_Node_2D, _is_summon_in_attack:bool):
+	MainPhase1_Summon(_card_node_2d)
+	Card_in_Hand_Des_Selected(_card_node_2d)
+	#-------------------------------------------------------------------------------
+	if(_card_node_2d.card_serializable.myCARTA == Card_Resource.CARTA.MONSTRUO):
+		var _card_slot_node_2d_array: Array[Card_Slot_Node_2D] = player_1.monster_card_slot_node_2d_array
+		#-------------------------------------------------------------------------------
+		for _i in _card_slot_node_2d_array.size():
+			_card_slot_node_2d_array[_i].normal_panel.hide()
+			_card_slot_node_2d_array[_i].selected_panel.show()
+			_card_slot_node_2d_array[_i].selected = func():Perform_Summoning(_card_node_2d, _card_slot_node_2d_array[_i], _is_summon_in_attack)
+		#-------------------------------------------------------------------------------
+	#-------------------------------------------------------------------------------
+	else:
+		var _card_slot_node_2d_array: Array[Card_Slot_Node_2D] = player_1.magic_card_slot_node_2d_array
+		#-------------------------------------------------------------------------------
+		for _i in _card_slot_node_2d_array.size():
+			_card_slot_node_2d_array[_i].normal_panel.hide()
+			_card_slot_node_2d_array[_i].selected_panel.show()
+			_card_slot_node_2d_array[_i].selected = func():Perform_Summoning(_card_node_2d, _card_slot_node_2d_array[_i], _is_summon_in_attack)
+		#-------------------------------------------------------------------------------
+	#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+func Perform_Summoning(_card_node_2d:Card_Node_2D, _card_slot_node_2d:Card_Slot_Node_2D, _is_summon_in_attack:bool):
+	_card_node_2d.collider.disabled = true
+	_card_node_2d.reparent(_card_slot_node_2d)
+	_card_node_2d.global_position = _card_slot_node_2d.global_position
+	_card_node_2d.scale = Vector2(0.6, 0.6)
+	_card_slot_node_2d.card_node_2d = _card_node_2d
+	player_1.hand_card_node_2d_array.erase(_card_node_2d)
+	#-------------------------------------------------------------------------------
+	if(_card_node_2d.card_serializable.myCARTA == Card_Resource.CARTA.MONSTRUO):
+		#-------------------------------------------------------------------------------
+		if(_is_summon_in_attack):
+			_card_node_2d.rotation_degrees = 0
+		#-------------------------------------------------------------------------------
+		else:
+			_card_node_2d.rotation_degrees = -90
+		#-------------------------------------------------------------------------------
+	#-------------------------------------------------------------------------------
+	else:
+		#-------------------------------------------------------------------------------
+		if(_is_summon_in_attack):
+			_card_node_2d.card_control.back_frame.hide()
+		#-------------------------------------------------------------------------------
+		else:
+			_card_node_2d.card_control.back_frame.show()
+		#-------------------------------------------------------------------------------
+	#-------------------------------------------------------------------------------
+	MainPhase1_from_Summon_to_Idle(_card_node_2d)
+	#-------------------------------------------------------------------------------
+	await Set_Hand_Position(player_1)
+#-------------------------------------------------------------------------------
+func MainPhase1_from_Summon_to_Idle(_card_node_2d:Card_Node_2D):
+	MainPhase1_Idle()
+	#-------------------------------------------------------------------------------
+	Disable_All_Card_Slots(player_1)
+#-------------------------------------------------------------------------------
+func MainPhase1_Summon(_card_node_2d:Card_Node_2D):
+	Set_Highlighted_in_Table()
+	#-------------------------------------------------------------------------------
+	nothing_selected = func():MainPhase1_from_Summon_to_Idle(_card_node_2d)
+	nothing_canceled = func():MainPhase1_from_Summon_to_Hand(_card_node_2d)
+	#-------------------------------------------------------------------------------
+	player_1.main_deck_node_2d.selected = func():MainPhase1_from_Summon_to_Idle(_card_node_2d)
+	player_1.extra_deck_node_2d.selected = func():MainPhase1_from_Summon_to_Idle(_card_node_2d)
+	player_1.grave_deck_node_2d.selected = func():MainPhase1_from_Summon_to_Idle(_card_node_2d)
+	player_1.removed_deck_node_2d.selected = func():MainPhase1_from_Summon_to_Idle(_card_node_2d)
+	#-------------------------------------------------------------------------------
+	for _i in player_1.monster_card_slot_node_2d_array.size():
+		player_1.monster_card_slot_node_2d_array[_i].selected = func():MainPhase1_from_Summon_to_Idle(_card_node_2d)
+	#-------------------------------------------------------------------------------
+	for _i in player_1.magic_card_slot_node_2d_array.size():
+		player_1.magic_card_slot_node_2d_array[_i].selected = func():MainPhase1_from_Summon_to_Idle(_card_node_2d)
+	#-------------------------------------------------------------------------------
+	for _i in player_1.hand_card_node_2d_array.size():
+		player_1.hand_card_node_2d_array[_i].selected = func():MainPhase1_from_Summon_to_Hand(player_1.hand_card_node_2d_array[_i])
+	#-------------------------------------------------------------------------------
+	player_2.main_deck_node_2d.selected = func():MainPhase1_from_Summon_to_Idle(_card_node_2d)
+	player_2.extra_deck_node_2d.selected = func():MainPhase1_from_Summon_to_Idle(_card_node_2d)
+	player_2.grave_deck_node_2d.selected = func():MainPhase1_from_Summon_to_Idle(_card_node_2d)
+	player_2.removed_deck_node_2d.selected = func():MainPhase1_from_Summon_to_Idle(_card_node_2d)
+	#-------------------------------------------------------------------------------
+	for _i in player_2.monster_card_slot_node_2d_array.size():
+		player_2.monster_card_slot_node_2d_array[_i].selected = func():MainPhase1_from_Summon_to_Idle(_card_node_2d)
+	#-------------------------------------------------------------------------------
+	for _i in player_2.magic_card_slot_node_2d_array.size():
+		player_2.magic_card_slot_node_2d_array[_i].selected = func():MainPhase1_from_Summon_to_Idle(_card_node_2d)
+	#-------------------------------------------------------------------------------
+	for _i in player_2.hand_card_node_2d_array.size():
+		player_2.hand_card_node_2d_array[_i].selected = func():MainPhase1_from_Summon_to_Hand(player_2.hand_card_node_2d_array[_i])
+#-------------------------------------------------------------------------------
+func MainPhase1_from_Summon_to_Hand(_card_node_2d:Card_Node_2D):
+	MainPhase1_Hand(_card_node_2d)
+	#-------------------------------------------------------------------------------
+	Disable_All_Card_Slots(player_1)
+	Card_in_Hand_Selected(_card_node_2d)
 #-------------------------------------------------------------------------------
 func Disable_All_Card_Slots(_player:Player_Node_2D):
-	Disable_Card_Slot_Node_2d_Array(_player.Get_Monster_Card_Slot_Array())
-	Disable_Card_Slot_Node_2d_Array(_player.Get_Magic_Card_Slot_Array())
+	Disable_Card_Slot_Node_2d_Array(_player.magic_card_slot_node_2d_array)
+	Disable_Card_Slot_Node_2d_Array(_player.monster_card_slot_node_2d_array)
 #-------------------------------------------------------------------------------
 func Disable_Card_Slot_Node_2d_Array(_card_slot_node_2d_array: Array[Card_Slot_Node_2D]):
 	#-------------------------------------------------------------------------------

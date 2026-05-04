@@ -6,11 +6,12 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_61w3p"]
 size = Vector2(136, 192)
 
-[node name="Card_Node_2D" type="Node2D" unique_id=434170569 node_paths=PackedStringArray("card_control", "offset")]
+[node name="Card_Node_2D" type="Node2D" unique_id=434170569 node_paths=PackedStringArray("card_control", "offset", "collider")]
 z_index = 1
 script = ExtResource("1_24ha6")
 card_control = NodePath("offset/Area2D/Card_Control")
 offset = NodePath("offset")
+collider = NodePath("offset/Area2D/CollisionShape2D")
 
 [node name="offset" type="Node2D" parent="." unique_id=2067035635]
 

@@ -4,4 +4,5 @@ class_name Card_Node_2D
 @export var card_serializable: Card_Serializable
 @export var card_control: Card_Control
 @export var offset: Node2D
+@export var collider: CollisionShape2D
 #-------------------------------------------------------------------------------
