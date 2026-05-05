@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://bohe7pjbcl1mh"]
 
 [ext_resource type="Script" uid="uid://v6y0eljxdy2k" path="res://Scripts/Prefabs/deck_slot_node_2d.gd" id="1_o1fv8"]
+[ext_resource type="PackedScene" uid="uid://wum5a72dssgb" path="res://Nodes/Prefabs/card_control.tscn" id="2_i66o4"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_o1fv8"]
 bg_color = Color(0, 0, 0, 0.60784316)
@@ -21,13 +22,14 @@ expand_margin_bottom = 4.0
 bg_color = Color(0.6, 0.6, 0, 0.60784316)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_7vcad"]
-size = Vector2(80, 128)
+size = Vector2(96, 128)
 
-[node name="Deck_Slot_Node_2D" type="Node2D" unique_id=471059926 node_paths=PackedStringArray("normal_panel", "highlighted_panel", "selected_panel", "label")]
+[node name="Deck_Slot_Node_2D" type="Node2D" unique_id=471059926 node_paths=PackedStringArray("normal_panel", "highlighted_panel", "selected_panel", "card_control", "label")]
 script = ExtResource("1_o1fv8")
 normal_panel = NodePath("offset/Area2D/Normal_Panel")
 highlighted_panel = NodePath("offset/Area2D/Highlighted_Panel")
 selected_panel = NodePath("offset/Area2D/Selected_Panel")
+card_control = NodePath("offset/Area2D/Card_Control")
 label = NodePath("offset/Area2D/Label")
 
 [node name="offset" type="Node2D" parent="." unique_id=637960756]
@@ -40,9 +42,9 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -40.0
+offset_left = -48.0
 offset_top = -64.0
-offset_right = 40.0
+offset_right = 48.0
 offset_bottom = 64.0
 grow_horizontal = 2
 grow_vertical = 2
@@ -56,9 +58,9 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -40.0
+offset_left = -48.0
 offset_top = -64.0
-offset_right = 40.0
+offset_right = 48.0
 offset_bottom = 64.0
 grow_horizontal = 2
 grow_vertical = 2
@@ -67,12 +69,18 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_i66o4")
 
 [node name="Selected_Panel" type="Panel" parent="offset/Area2D" unique_id=26772843]
 visible = false
-offset_left = -40.0
+offset_left = -48.0
 offset_top = -64.0
-offset_right = 40.0
+offset_right = 48.0
 offset_bottom = 64.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_isf5s")
+
+[node name="Card_Control" parent="offset/Area2D" unique_id=118479895 instance=ExtResource("2_i66o4")]
+offset_left = -40.0
+offset_top = -56.0
+offset_right = 40.0
+offset_bottom = 56.0
 
 [node name="Label" type="Label" parent="offset/Area2D" unique_id=89206077]
 anchors_preset = 15
@@ -85,6 +93,7 @@ offset_bottom = 64.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 20
 text = "40 / 40"
 horizontal_alignment = 1
 vertical_alignment = 2
