@@ -7,4 +7,5 @@
 script = ExtResource("2_nsyjw")
 artwork = ExtResource("1_ex6bk")
 myCARTA = 1
+myMAGIC_TYPE = 3
 metadata/_custom_type_script = "uid://dw6842lhjlqnr"

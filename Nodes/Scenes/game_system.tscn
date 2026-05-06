@@ -34,7 +34,7 @@
 [ext_resource type="Resource" uid="uid://e4tdk4xnh6p7" path="res://Cards/Resources/dragonmaid_fusion (1).tres" id="30_jvut7"]
 [ext_resource type="Resource" uid="uid://p6f7nbqlh47n" path="res://Cards/Resources/dragonmaid_fusion (2).tres" id="31_0ol08"]
 
-[node name="game_system" type="Node" unique_id=1654901492 node_paths=PackedStringArray("phase_button", "card_button_root", "card_button_array", "card_info", "card_info_richtext_stats", "card_info_richtext_effect_title", "card_info_richtext_effect_description", "debug_label", "fps_label", "player_1", "player_2", "world_2d")]
+[node name="game_system" type="Node" unique_id=1654901492 node_paths=PackedStringArray("phase_button", "card_button_root", "card_button_array", "card_info_menu", "card_info_card_control", "card_info_richtext_stats", "card_info_richtext_effect_title", "card_info_richtext_effect_description", "debug_label", "fps_label", "player_1", "player_2", "world_2d")]
 script = ExtResource("1_61w3p")
 card_node_2d_prefab = ExtResource("4_3qfkf")
 frame_monster = ExtResource("3_qaew0")
@@ -42,9 +42,10 @@ frame_fusion = ExtResource("4_5tyxt")
 frame_magic = ExtResource("5_4joci")
 frame_trap = ExtResource("6_b3seq")
 phase_button = NodePath("CanvasLayer/Button")
-card_button_root = NodePath("CanvasLayer/Control")
-card_button_array = [NodePath("CanvasLayer/Control/HBoxContainer/Button"), NodePath("CanvasLayer/Control/HBoxContainer/Button2")]
-card_info = NodePath("CanvasLayer/Card_Info_MarginContainer/VBoxContainer/Card_Control")
+card_button_root = NodePath("CanvasLayer/Card_Menu")
+card_button_array = [NodePath("CanvasLayer/Card_Menu/HBoxContainer/Button"), NodePath("CanvasLayer/Card_Menu/HBoxContainer/Button2")]
+card_info_menu = NodePath("CanvasLayer/Card_Info_MarginContainer")
+card_info_card_control = NodePath("CanvasLayer/Card_Info_MarginContainer/VBoxContainer/Card_Control")
 card_info_richtext_stats = NodePath("CanvasLayer/Card_Info_MarginContainer/VBoxContainer/PanelContainer/MarginContainer/RichTextLabel")
 card_info_richtext_effect_title = NodePath("CanvasLayer/Card_Info_MarginContainer/VBoxContainer/Panel2/MarginContainer/VBoxContainer/RichTextLabel")
 card_info_richtext_effect_description = NodePath("CanvasLayer/Card_Info_MarginContainer/VBoxContainer/Panel2/MarginContainer/VBoxContainer/RichTextLabel2")
@@ -59,7 +60,8 @@ world_2d = NodePath("World_2D")
 [node name="Player_2" type="Node2D" parent="World_2D" unique_id=77339912 node_paths=PackedStringArray("main_deck_node_2d", "extra_deck_node_2d", "grave_deck_node_2d", "removed_deck_node_2d", "magic_card_slot_node_2d_array", "monster_card_slot_node_2d_array", "hand_node_2d")]
 position = Vector2(800, 200)
 script = ExtResource("2_bl7op")
-main_deck_card_resource_array = Array[ExtResource("6_aki42")]([ExtResource("7_sdvoo"), ExtResource("8_5hmol"), ExtResource("9_idtnd"), ExtResource("10_qaew0"), ExtResource("11_5tyxt"), ExtResource("12_4joci"), ExtResource("13_b3seq"), ExtResource("14_qvm7l"), ExtResource("15_f0mm6")])
+main_deck_card_resource_array = Array[ExtResource("6_aki42")]([ExtResource("7_sdvoo"), ExtResource("7_sdvoo"), ExtResource("7_sdvoo"), ExtResource("8_5hmol"), ExtResource("8_5hmol"), ExtResource("8_5hmol"), ExtResource("9_idtnd"), ExtResource("9_idtnd"), ExtResource("9_idtnd"), ExtResource("10_qaew0"), ExtResource("10_qaew0"), ExtResource("10_qaew0"), ExtResource("11_5tyxt"), ExtResource("11_5tyxt"), ExtResource("11_5tyxt"), ExtResource("12_4joci"), ExtResource("12_4joci"), ExtResource("12_4joci"), ExtResource("13_b3seq"), ExtResource("13_b3seq"), ExtResource("13_b3seq"), ExtResource("14_qvm7l"), ExtResource("14_qvm7l"), ExtResource("14_qvm7l"), ExtResource("15_f0mm6"), ExtResource("15_f0mm6"), ExtResource("15_f0mm6"), ExtResource("26_okou3"), ExtResource("26_okou3"), ExtResource("26_okou3"), ExtResource("27_21fne"), ExtResource("27_21fne"), ExtResource("27_21fne"), ExtResource("28_fuapw"), ExtResource("28_fuapw"), ExtResource("28_fuapw"), ExtResource("29_5rrxs"), ExtResource("29_5rrxs"), ExtResource("29_5rrxs"), ExtResource("20_5tyxt"), ExtResource("20_5tyxt"), ExtResource("20_5tyxt"), ExtResource("21_4yeo2"), ExtResource("21_4yeo2"), ExtResource("21_4yeo2"), ExtResource("22_mw21k"), ExtResource("22_mw21k"), ExtResource("22_mw21k"), ExtResource("23_0fhip"), ExtResource("23_0fhip"), ExtResource("23_0fhip"), ExtResource("24_3tnvq"), ExtResource("24_3tnvq"), ExtResource("24_3tnvq"), ExtResource("25_v7mak"), ExtResource("25_v7mak"), ExtResource("25_v7mak"), ExtResource("20_5tyxt"), ExtResource("20_5tyxt"), ExtResource("20_5tyxt"), ExtResource("20_5tyxt"), ExtResource("20_5tyxt"), ExtResource("20_5tyxt"), ExtResource("20_5tyxt"), ExtResource("20_5tyxt"), ExtResource("20_5tyxt"), ExtResource("20_5tyxt"), ExtResource("20_5tyxt"), ExtResource("20_5tyxt"), ExtResource("20_5tyxt"), ExtResource("20_5tyxt"), ExtResource("20_5tyxt"), ExtResource("20_5tyxt"), ExtResource("20_5tyxt"), ExtResource("20_5tyxt"), ExtResource("20_5tyxt"), ExtResource("20_5tyxt"), ExtResource("20_5tyxt"), ExtResource("20_5tyxt"), ExtResource("20_5tyxt"), ExtResource("20_5tyxt"), ExtResource("20_5tyxt")])
+extra_deck_card_resource_array = Array[ExtResource("6_aki42")]([ExtResource("30_jvut7"), ExtResource("30_jvut7"), ExtResource("30_jvut7"), ExtResource("31_0ol08"), ExtResource("31_0ol08"), ExtResource("31_0ol08")])
 main_deck_node_2d = NodePath("Node2D/Main_Deck_Slot_Node_2D2")
 extra_deck_node_2d = NodePath("Node2D2/Extra_Deck_Slot_Node_2D2")
 grave_deck_node_2d = NodePath("Node2D/Grave_Deck_Slot_Node_2D")
@@ -119,7 +121,7 @@ position = Vector2(416, 0)
 [node name="Player_1" type="Node2D" parent="World_2D" unique_id=2141550949 node_paths=PackedStringArray("main_deck_node_2d", "extra_deck_node_2d", "grave_deck_node_2d", "removed_deck_node_2d", "magic_card_slot_node_2d_array", "monster_card_slot_node_2d_array", "hand_node_2d")]
 position = Vector2(800, 700)
 script = ExtResource("2_bl7op")
-main_deck_card_resource_array = Array[ExtResource("6_aki42")]([ExtResource("7_sdvoo"), ExtResource("8_5hmol"), ExtResource("9_idtnd"), ExtResource("10_qaew0"), ExtResource("11_5tyxt"), ExtResource("12_4joci"), ExtResource("13_b3seq"), ExtResource("14_qvm7l"), ExtResource("15_f0mm6"), ExtResource("20_5tyxt"), ExtResource("21_4yeo2"), ExtResource("22_mw21k"), ExtResource("23_0fhip"), ExtResource("24_3tnvq"), ExtResource("25_v7mak"), ExtResource("26_okou3"), ExtResource("27_21fne"), ExtResource("28_fuapw"), ExtResource("29_5rrxs")])
+main_deck_card_resource_array = Array[ExtResource("6_aki42")]([ExtResource("7_sdvoo"), ExtResource("8_5hmol"), ExtResource("9_idtnd"), ExtResource("10_qaew0"), ExtResource("11_5tyxt"), ExtResource("12_4joci"), ExtResource("13_b3seq"), ExtResource("14_qvm7l"), ExtResource("15_f0mm6"), ExtResource("20_5tyxt"), ExtResource("21_4yeo2"), ExtResource("22_mw21k"), ExtResource("23_0fhip"), ExtResource("24_3tnvq"), ExtResource("25_v7mak"), ExtResource("26_okou3"), ExtResource("27_21fne"), ExtResource("28_fuapw"), ExtResource("29_5rrxs"), ExtResource("7_sdvoo"), ExtResource("8_5hmol"), ExtResource("9_idtnd"), ExtResource("10_qaew0"), ExtResource("11_5tyxt"), ExtResource("12_4joci"), ExtResource("13_b3seq"), ExtResource("14_qvm7l"), ExtResource("15_f0mm6"), ExtResource("20_5tyxt"), ExtResource("21_4yeo2"), ExtResource("22_mw21k"), ExtResource("23_0fhip"), ExtResource("24_3tnvq"), ExtResource("25_v7mak"), ExtResource("26_okou3"), ExtResource("27_21fne"), ExtResource("28_fuapw"), ExtResource("29_5rrxs"), ExtResource("7_sdvoo"), ExtResource("8_5hmol"), ExtResource("9_idtnd")])
 extra_deck_card_resource_array = Array[ExtResource("6_aki42")]([ExtResource("30_jvut7"), ExtResource("31_0ol08")])
 main_deck_node_2d = NodePath("Node2D/Main_Deck_Slot_Node_2D")
 extra_deck_node_2d = NodePath("Node2D2/Extra_Deck_Slot_Node_2D")
@@ -180,6 +182,7 @@ position = Vector2(0, 156)
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=901443919]
 
 [node name="Card_List_MarginContainer" type="MarginContainer" parent="CanvasLayer" unique_id=2084820331]
+visible = false
 anchors_preset = 11
 anchor_left = 1.0
 anchor_right = 1.0
@@ -295,8 +298,8 @@ custom_minimum_size = Vector2(0, 100)
 layout_mode = 2
 
 [node name="Card_Info_MarginContainer" type="MarginContainer" parent="CanvasLayer" unique_id=1301868251]
-offset_right = 288.0
-offset_bottom = 760.0
+offset_right = 315.0
+offset_bottom = 784.0
 size_flags_horizontal = 0
 theme_override_constants/margin_left = 15
 theme_override_constants/margin_top = 15
@@ -305,9 +308,8 @@ theme_override_constants/margin_top = 15
 layout_mode = 2
 
 [node name="Card_Control" parent="CanvasLayer/Card_Info_MarginContainer/VBoxContainer" unique_id=118479895 instance=ExtResource("6_oe5uq")]
-custom_minimum_size = Vector2(0, 350)
+custom_minimum_size = Vector2(300, 400)
 layout_mode = 2
-size_flags_vertical = 3
 
 [node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/Card_Info_MarginContainer/VBoxContainer" unique_id=93948345]
 layout_mode = 2
@@ -358,49 +360,8 @@ size_flags_vertical = 3
 bbcode_enabled = true
 text = "Bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla bla"
 
-[node name="Debug_MarginContainer" type="MarginContainer" parent="CanvasLayer" unique_id=1234332198]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-theme_override_constants/margin_left = 15
-theme_override_constants/margin_top = 15
-theme_override_constants/margin_right = 15
-theme_override_constants/margin_bottom = 15
-
-[node name="debug_Label" type="Label" parent="CanvasLayer/Debug_MarginContainer" unique_id=1233696768]
-visible = false
-layout_mode = 2
-size_flags_horizontal = 0
-size_flags_vertical = 0
-theme_override_constants/outline_size = 2
-theme_override_font_sizes/font_size = 12
-text = "debug Label"
-
-[node name="fps_Label" type="Label" parent="CanvasLayer/Debug_MarginContainer" unique_id=252337735]
-layout_mode = 2
-size_flags_horizontal = 8
-size_flags_vertical = 8
-theme_override_constants/outline_size = 4
-text = "60 fps."
-horizontal_alignment = 2
-vertical_alignment = 2
-
-[node name="Control" type="Control" parent="CanvasLayer" unique_id=547704805]
+[node name="Card_Menu" type="Control" parent="CanvasLayer" unique_id=547704805]
 layout_mode = 3
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-
-[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/Control" unique_id=1409417501]
-layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
@@ -410,29 +371,39 @@ grow_horizontal = 2
 grow_vertical = 0
 mouse_filter = 2
 
-[node name="Button" type="Button" parent="CanvasLayer/Control/HBoxContainer" unique_id=214945423]
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/Card_Menu" unique_id=1409417501]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="Button" type="Button" parent="CanvasLayer/Card_Menu/HBoxContainer" unique_id=214945423]
 custom_minimum_size = Vector2(80, 80)
 layout_mode = 2
 text = "Summon"
 
-[node name="Button2" type="Button" parent="CanvasLayer/Control/HBoxContainer" unique_id=7349874]
+[node name="Button2" type="Button" parent="CanvasLayer/Card_Menu/HBoxContainer" unique_id=7349874]
 custom_minimum_size = Vector2(80, 80)
 layout_mode = 2
 text = "Set"
 
-[node name="Button3" type="Button" parent="CanvasLayer/Control/HBoxContainer" unique_id=512729683]
+[node name="Button3" type="Button" parent="CanvasLayer/Card_Menu/HBoxContainer" unique_id=512729683]
 visible = false
 custom_minimum_size = Vector2(80, 80)
 layout_mode = 2
 text = "Info."
 
-[node name="Button4" type="Button" parent="CanvasLayer/Control/HBoxContainer" unique_id=699423602]
+[node name="Button4" type="Button" parent="CanvasLayer/Card_Menu/HBoxContainer" unique_id=699423602]
 visible = false
 custom_minimum_size = Vector2(80, 80)
 layout_mode = 2
 text = "Info."
 
-[node name="Button5" type="Button" parent="CanvasLayer/Control/HBoxContainer" unique_id=2130791946]
+[node name="Button5" type="Button" parent="CanvasLayer/Card_Menu/HBoxContainer" unique_id=2130791946]
 visible = false
 custom_minimum_size = Vector2(80, 80)
 layout_mode = 2
@@ -574,3 +545,33 @@ theme_override_constants/outline_size = 5
 theme_override_font_sizes/font_size = 45
 text = "4000 LP"
 horizontal_alignment = 1
+
+[node name="Debug_MarginContainer" type="MarginContainer" parent="CanvasLayer" unique_id=1234332198]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 15
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 15
+
+[node name="debug_Label" type="Label" parent="CanvasLayer/Debug_MarginContainer" unique_id=1233696768]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+theme_override_constants/outline_size = 2
+theme_override_font_sizes/font_size = 12
+text = "debug Label"
+
+[node name="fps_Label" type="Label" parent="CanvasLayer/Debug_MarginContainer" unique_id=252337735]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+theme_override_constants/outline_size = 4
+text = "60 fps."
+horizontal_alignment = 2
+vertical_alignment = 2

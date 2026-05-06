@@ -6,4 +6,3 @@ class_name Card_Node_2D
 @export var offset: Node2D
 @export var collider: CollisionShape2D
 #-------------------------------------------------------------------------------
-var can_be_seen: bool
