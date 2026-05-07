@@ -34,7 +34,7 @@
 [ext_resource type="Resource" uid="uid://e4tdk4xnh6p7" path="res://Cards/Resources/dragonmaid_fusion (1).tres" id="30_jvut7"]
 [ext_resource type="Resource" uid="uid://p6f7nbqlh47n" path="res://Cards/Resources/dragonmaid_fusion (2).tres" id="31_0ol08"]
 
-[node name="game_system" type="Node" unique_id=1654901492 node_paths=PackedStringArray("phase_button", "card_button_root", "card_button_array", "card_info_menu", "card_info_card_control", "card_info_richtext_stats", "card_info_richtext_effect_title", "card_info_richtext_effect_description", "debug_label", "fps_label", "player_1", "player_2", "world_2d")]
+[node name="game_system" type="Node" unique_id=1654901492 node_paths=PackedStringArray("phase_button", "card_button_root", "card_button_array", "card_info_menu", "card_info_card_control", "card_info_richtext_stats", "card_info_richtext_effect_title", "card_info_richtext_effect_description", "deck_list_menu", "deck_list_scrollcontainer", "deck_list_content", "debug_label", "fps_label", "player_1", "player_2", "world_2d")]
 script = ExtResource("1_61w3p")
 card_node_2d_prefab = ExtResource("4_3qfkf")
 frame_monster = ExtResource("3_qaew0")
@@ -49,6 +49,10 @@ card_info_card_control = NodePath("CanvasLayer/Card_Info_MarginContainer/VBoxCon
 card_info_richtext_stats = NodePath("CanvasLayer/Card_Info_MarginContainer/VBoxContainer/PanelContainer/MarginContainer/RichTextLabel")
 card_info_richtext_effect_title = NodePath("CanvasLayer/Card_Info_MarginContainer/VBoxContainer/Panel2/MarginContainer/VBoxContainer/RichTextLabel")
 card_info_richtext_effect_description = NodePath("CanvasLayer/Card_Info_MarginContainer/VBoxContainer/Panel2/MarginContainer/VBoxContainer/RichTextLabel2")
+deck_list_menu = NodePath("CanvasLayer/Card_List_MarginContainer")
+deck_list_scrollcontainer = NodePath("CanvasLayer/Card_List_MarginContainer/PanelContainer/MarginContainer/ScrollContainer")
+deck_list_content = NodePath("CanvasLayer/Card_List_MarginContainer/PanelContainer/MarginContainer/ScrollContainer/MarginContainer/VBoxContainer")
+card_button_prefab = ExtResource("5_3qfkf")
 debug_label = NodePath("CanvasLayer/Debug_MarginContainer/debug_Label")
 fps_label = NodePath("CanvasLayer/Debug_MarginContainer/fps_Label")
 player_1 = NodePath("World_2D/Player_1")
@@ -182,12 +186,11 @@ position = Vector2(0, 156)
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=901443919]
 
 [node name="Card_List_MarginContainer" type="MarginContainer" parent="CanvasLayer" unique_id=2084820331]
-visible = false
 anchors_preset = 11
 anchor_left = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -136.0
+offset_left = -138.0
 offset_top = 112.0
 grow_horizontal = 0
 grow_vertical = 2
@@ -196,106 +199,134 @@ theme_override_constants/margin_top = 15
 theme_override_constants/margin_right = 15
 theme_override_constants/margin_bottom = 15
 
-[node name="Panel" type="Panel" parent="CanvasLayer/Card_List_MarginContainer" unique_id=1501342366]
+[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/Card_List_MarginContainer" unique_id=1082603017]
 layout_mode = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/Card_List_MarginContainer/Panel" unique_id=1274314531]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/Card_List_MarginContainer/PanelContainer" unique_id=1274314531]
+layout_mode = 2
 theme_override_constants/margin_left = 15
 theme_override_constants/margin_top = 15
 theme_override_constants/margin_right = 15
 theme_override_constants/margin_bottom = 15
 
-[node name="ScrollContainer" type="ScrollContainer" parent="CanvasLayer/Card_List_MarginContainer/Panel/MarginContainer" unique_id=1662957592]
+[node name="ScrollContainer" type="ScrollContainer" parent="CanvasLayer/Card_List_MarginContainer/PanelContainer/MarginContainer" unique_id=1662957592]
 layout_mode = 2
 follow_focus = true
 horizontal_scroll_mode = 0
 vertical_scroll_mode = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/Card_List_MarginContainer/Panel/MarginContainer/ScrollContainer" unique_id=679761027]
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/Card_List_MarginContainer/PanelContainer/MarginContainer/ScrollContainer" unique_id=679761027]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/margin_right = 15
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Card_List_MarginContainer/Panel/MarginContainer/ScrollContainer/MarginContainer" unique_id=1847612376]
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Card_List_MarginContainer/PanelContainer/MarginContainer/ScrollContainer/MarginContainer" unique_id=1847612376]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_constants/separation = 15
 
-[node name="Card_Button" parent="CanvasLayer/Card_List_MarginContainer/Panel/MarginContainer/ScrollContainer/MarginContainer/VBoxContainer" unique_id=1426445735 instance=ExtResource("5_3qfkf")]
-custom_minimum_size = Vector2(0, 100)
+[node name="Card_Button" parent="CanvasLayer/Card_List_MarginContainer/PanelContainer/MarginContainer/ScrollContainer/MarginContainer/VBoxContainer" unique_id=1426445735 instance=ExtResource("5_3qfkf")]
+custom_minimum_size = Vector2(70, 100)
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 
-[node name="Card_Button2" parent="CanvasLayer/Card_List_MarginContainer/Panel/MarginContainer/ScrollContainer/MarginContainer/VBoxContainer" unique_id=270252151 instance=ExtResource("5_3qfkf")]
-custom_minimum_size = Vector2(0, 100)
+[node name="Card_Button2" parent="CanvasLayer/Card_List_MarginContainer/PanelContainer/MarginContainer/ScrollContainer/MarginContainer/VBoxContainer" unique_id=270252151 instance=ExtResource("5_3qfkf")]
+custom_minimum_size = Vector2(70, 100)
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 
-[node name="Card_Button3" parent="CanvasLayer/Card_List_MarginContainer/Panel/MarginContainer/ScrollContainer/MarginContainer/VBoxContainer" unique_id=1774035718 instance=ExtResource("5_3qfkf")]
-custom_minimum_size = Vector2(0, 100)
+[node name="Card_Button3" parent="CanvasLayer/Card_List_MarginContainer/PanelContainer/MarginContainer/ScrollContainer/MarginContainer/VBoxContainer" unique_id=1774035718 instance=ExtResource("5_3qfkf")]
+custom_minimum_size = Vector2(70, 100)
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 
-[node name="Card_Button4" parent="CanvasLayer/Card_List_MarginContainer/Panel/MarginContainer/ScrollContainer/MarginContainer/VBoxContainer" unique_id=1483279464 instance=ExtResource("5_3qfkf")]
-custom_minimum_size = Vector2(0, 100)
+[node name="Card_Button4" parent="CanvasLayer/Card_List_MarginContainer/PanelContainer/MarginContainer/ScrollContainer/MarginContainer/VBoxContainer" unique_id=1483279464 instance=ExtResource("5_3qfkf")]
+custom_minimum_size = Vector2(70, 100)
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 
-[node name="Card_Button5" parent="CanvasLayer/Card_List_MarginContainer/Panel/MarginContainer/ScrollContainer/MarginContainer/VBoxContainer" unique_id=1368546270 instance=ExtResource("5_3qfkf")]
-custom_minimum_size = Vector2(0, 100)
+[node name="Card_Button5" parent="CanvasLayer/Card_List_MarginContainer/PanelContainer/MarginContainer/ScrollContainer/MarginContainer/VBoxContainer" unique_id=1368546270 instance=ExtResource("5_3qfkf")]
+custom_minimum_size = Vector2(70, 100)
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 
-[node name="Card_Button6" parent="CanvasLayer/Card_List_MarginContainer/Panel/MarginContainer/ScrollContainer/MarginContainer/VBoxContainer" unique_id=581985351 instance=ExtResource("5_3qfkf")]
-custom_minimum_size = Vector2(0, 100)
+[node name="Card_Button6" parent="CanvasLayer/Card_List_MarginContainer/PanelContainer/MarginContainer/ScrollContainer/MarginContainer/VBoxContainer" unique_id=581985351 instance=ExtResource("5_3qfkf")]
+custom_minimum_size = Vector2(70, 100)
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 
-[node name="Card_Button7" parent="CanvasLayer/Card_List_MarginContainer/Panel/MarginContainer/ScrollContainer/MarginContainer/VBoxContainer" unique_id=1096832868 instance=ExtResource("5_3qfkf")]
-custom_minimum_size = Vector2(0, 100)
+[node name="Card_Button7" parent="CanvasLayer/Card_List_MarginContainer/PanelContainer/MarginContainer/ScrollContainer/MarginContainer/VBoxContainer" unique_id=1096832868 instance=ExtResource("5_3qfkf")]
+custom_minimum_size = Vector2(70, 100)
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 
-[node name="Card_Button8" parent="CanvasLayer/Card_List_MarginContainer/Panel/MarginContainer/ScrollContainer/MarginContainer/VBoxContainer" unique_id=735669939 instance=ExtResource("5_3qfkf")]
-custom_minimum_size = Vector2(0, 100)
+[node name="Card_Button8" parent="CanvasLayer/Card_List_MarginContainer/PanelContainer/MarginContainer/ScrollContainer/MarginContainer/VBoxContainer" unique_id=735669939 instance=ExtResource("5_3qfkf")]
+custom_minimum_size = Vector2(70, 100)
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 
-[node name="Card_Button9" parent="CanvasLayer/Card_List_MarginContainer/Panel/MarginContainer/ScrollContainer/MarginContainer/VBoxContainer" unique_id=1974642629 instance=ExtResource("5_3qfkf")]
-custom_minimum_size = Vector2(0, 100)
+[node name="Card_Button9" parent="CanvasLayer/Card_List_MarginContainer/PanelContainer/MarginContainer/ScrollContainer/MarginContainer/VBoxContainer" unique_id=1974642629 instance=ExtResource("5_3qfkf")]
+custom_minimum_size = Vector2(70, 100)
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 
-[node name="Card_Button10" parent="CanvasLayer/Card_List_MarginContainer/Panel/MarginContainer/ScrollContainer/MarginContainer/VBoxContainer" unique_id=704952301 instance=ExtResource("5_3qfkf")]
-custom_minimum_size = Vector2(0, 100)
+[node name="Card_Button10" parent="CanvasLayer/Card_List_MarginContainer/PanelContainer/MarginContainer/ScrollContainer/MarginContainer/VBoxContainer" unique_id=704952301 instance=ExtResource("5_3qfkf")]
+custom_minimum_size = Vector2(70, 100)
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 
-[node name="Card_Button11" parent="CanvasLayer/Card_List_MarginContainer/Panel/MarginContainer/ScrollContainer/MarginContainer/VBoxContainer" unique_id=1203139110 instance=ExtResource("5_3qfkf")]
-custom_minimum_size = Vector2(0, 100)
+[node name="Card_Button11" parent="CanvasLayer/Card_List_MarginContainer/PanelContainer/MarginContainer/ScrollContainer/MarginContainer/VBoxContainer" unique_id=1203139110 instance=ExtResource("5_3qfkf")]
+custom_minimum_size = Vector2(70, 100)
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 
-[node name="Card_Button12" parent="CanvasLayer/Card_List_MarginContainer/Panel/MarginContainer/ScrollContainer/MarginContainer/VBoxContainer" unique_id=1881805412 instance=ExtResource("5_3qfkf")]
-custom_minimum_size = Vector2(0, 100)
+[node name="Card_Button12" parent="CanvasLayer/Card_List_MarginContainer/PanelContainer/MarginContainer/ScrollContainer/MarginContainer/VBoxContainer" unique_id=1881805412 instance=ExtResource("5_3qfkf")]
+custom_minimum_size = Vector2(70, 100)
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 
-[node name="Card_Button13" parent="CanvasLayer/Card_List_MarginContainer/Panel/MarginContainer/ScrollContainer/MarginContainer/VBoxContainer" unique_id=50481936 instance=ExtResource("5_3qfkf")]
-custom_minimum_size = Vector2(0, 100)
+[node name="Card_Button13" parent="CanvasLayer/Card_List_MarginContainer/PanelContainer/MarginContainer/ScrollContainer/MarginContainer/VBoxContainer" unique_id=50481936 instance=ExtResource("5_3qfkf")]
+custom_minimum_size = Vector2(70, 100)
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 
-[node name="Card_Button14" parent="CanvasLayer/Card_List_MarginContainer/Panel/MarginContainer/ScrollContainer/MarginContainer/VBoxContainer" unique_id=1075595735 instance=ExtResource("5_3qfkf")]
-custom_minimum_size = Vector2(0, 100)
+[node name="Card_Button14" parent="CanvasLayer/Card_List_MarginContainer/PanelContainer/MarginContainer/ScrollContainer/MarginContainer/VBoxContainer" unique_id=1075595735 instance=ExtResource("5_3qfkf")]
+custom_minimum_size = Vector2(70, 100)
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 
-[node name="Card_Button15" parent="CanvasLayer/Card_List_MarginContainer/Panel/MarginContainer/ScrollContainer/MarginContainer/VBoxContainer" unique_id=1895761110 instance=ExtResource("5_3qfkf")]
-custom_minimum_size = Vector2(0, 100)
+[node name="Card_Button15" parent="CanvasLayer/Card_List_MarginContainer/PanelContainer/MarginContainer/ScrollContainer/MarginContainer/VBoxContainer" unique_id=1895761110 instance=ExtResource("5_3qfkf")]
+custom_minimum_size = Vector2(70, 100)
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 
-[node name="Card_Button16" parent="CanvasLayer/Card_List_MarginContainer/Panel/MarginContainer/ScrollContainer/MarginContainer/VBoxContainer" unique_id=423667168 instance=ExtResource("5_3qfkf")]
-custom_minimum_size = Vector2(0, 100)
+[node name="Card_Button16" parent="CanvasLayer/Card_List_MarginContainer/PanelContainer/MarginContainer/ScrollContainer/MarginContainer/VBoxContainer" unique_id=423667168 instance=ExtResource("5_3qfkf")]
+custom_minimum_size = Vector2(70, 100)
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 
-[node name="Card_Button17" parent="CanvasLayer/Card_List_MarginContainer/Panel/MarginContainer/ScrollContainer/MarginContainer/VBoxContainer" unique_id=1570731710 instance=ExtResource("5_3qfkf")]
-custom_minimum_size = Vector2(0, 100)
+[node name="Card_Button17" parent="CanvasLayer/Card_List_MarginContainer/PanelContainer/MarginContainer/ScrollContainer/MarginContainer/VBoxContainer" unique_id=1570731710 instance=ExtResource("5_3qfkf")]
+custom_minimum_size = Vector2(70, 100)
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 
 [node name="Card_Info_MarginContainer" type="MarginContainer" parent="CanvasLayer" unique_id=1301868251]
 offset_right = 315.0

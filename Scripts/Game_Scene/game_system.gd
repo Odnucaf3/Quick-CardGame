@@ -27,6 +27,12 @@ var focused_control: Control
 @export var card_info_richtext_effect_title: RichTextLabel
 @export var card_info_richtext_effect_description: RichTextLabel
 #-------------------------------------------------------------------------------
+@export var deck_list_menu: Control
+@export var deck_list_scrollcontainer: ScrollContainer
+@export var deck_list_content: VBoxContainer
+@export var card_button_prefab: PackedScene
+@export var deck_list_card_button_array: Array[Card_Button]
+#-------------------------------------------------------------------------------
 @export var debug_label: Label
 @export var fps_label: Label
 @export var player_1: Player_Node_2D
@@ -69,6 +75,9 @@ func _ready() -> void:
 	Info_Panel_Hide()
 	Set_Highlighted_in_Table()
 	#-------------------------------------------------------------------------------
+	Destroy_Childrens(deck_list_content)
+	Hide_Deck_List_Menu()
+#-------------------------------------------------------------------------------
 	card_button_root.hide()
 	#-------------------------------------------------------------------------------
 	await Seconds(0.5)
@@ -240,8 +249,8 @@ func StateMachine_Selected():
 	#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 func StateMachine_Canceled():
-	if(hovered_control != null):
-		return
+	#if(hovered_control != null):
+	#	return
 	#-------------------------------------------------------------------------------
 	if(Input.is_action_just_released("Right_Click")):
 		nothing_canceled.call()
@@ -249,6 +258,7 @@ func StateMachine_Canceled():
 #-------------------------------------------------------------------------------
 func Set_Card_Control_with_Card_Serializable(_card_control:Card_Control, _card_serializable:Card_Serializable):
 	_card_control.artwork.texture = _card_serializable.card_resource.artwork
+	_card_control.back_frame.hide()
 	#-------------------------------------------------------------------------------
 	match(_card_serializable.myCARTA):
 		Card_Resource.CARTA.MONSTRUO:
@@ -562,15 +572,16 @@ func Show_Card_Node_2D_in_Info_Panel(_card_node_2d:Card_Node_2D):
 		Info_Panel_Hide()
 	#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
-func Show_Card_Serializable_Array_in_Info_Panel(_card_serializable_array:Array[Card_Serializable]):
-	var _size: int = _card_serializable_array.size()
+func Show_Card_Serializable_Array_in_Info_Panel(_deck_node_2d:Deck_Slot_Node_2D):
+	var _size: int = _deck_node_2d.card_serializable_array.size()
 	#-------------------------------------------------------------------------------
 	if(_size > 0):
-		Show_Card_Serializable_in_Info_Panel(_card_serializable_array[_size-1])
+		Show_Card_Serializable_in_Info_Panel(_deck_node_2d.card_serializable_array[_size-1])
 	#-------------------------------------------------------------------------------
 	else:
 		Show_Card_Serializable_in_Info_Panel(null)
 	#-------------------------------------------------------------------------------
+	Show_Deck_List_Menu(_deck_node_2d)
 #-------------------------------------------------------------------------------
 func Show_Card_Serializable_in_Info_Panel(_card_serializable:Card_Serializable):
 	#-------------------------------------------------------------------------------
@@ -661,6 +672,13 @@ func get_resource_filename(_resource: Resource) -> String:
 func get_instance_filename(_node: Node) -> String:
 	return _node.scene_file_path.get_file().trim_suffix('.tscn')
 #-------------------------------------------------------------------------------
+func Destroy_Childrens(_node:Node):
+	var children = _node.get_children()
+	#-------------------------------------------------------------------------------
+	for _child in children:
+		_child.queue_free()
+	#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 #region MAIN_PHASE_1 - IDLE
 #-------------------------------------------------------------------------------
 func MainPhase1_Idle():
@@ -700,6 +718,7 @@ func MainPhase1_Idle():
 #-------------------------------------------------------------------------------
 func MainPhase1_from_Idle_to_Idle_by_Nothing():
 	#-------------------------------------------------------------------------------
+	Hide_Deck_List_Menu()
 	Info_Panel_Hide()
 #-------------------------------------------------------------------------------
 func MainPhase1_from_Idle_to_Idle_by_Cancel():
@@ -712,9 +731,10 @@ func MainPhase1_from_Idle_to_Hand_by_Hand(_card_node_2d:Card_Node_2D):
 #-------------------------------------------------------------------------------
 func MainPhase1_from_Idle_to_Idle_by_Zone(_card_slot_node_2d:Card_Slot_Node_2D):
 	Show_Card_Node_2D_in_Info_Panel(_card_slot_node_2d.card_node_2d)
+	Hide_Deck_List_Menu()
 #-------------------------------------------------------------------------------
 func MainPhase1_from_Idle_to_Idle_by_Deck(_deck_slot_node_2d:Deck_Slot_Node_2D):
-	Show_Card_Serializable_Array_in_Info_Panel(_deck_slot_node_2d.card_serializable_array)
+	Show_Card_Serializable_Array_in_Info_Panel(_deck_slot_node_2d)
 #-------------------------------------------------------------------------------
 #endregion
 #-------------------------------------------------------------------------------
@@ -722,6 +742,7 @@ func MainPhase1_from_Idle_to_Idle_by_Deck(_deck_slot_node_2d:Deck_Slot_Node_2D):
 #-------------------------------------------------------------------------------
 func MainPhase1_Hand(_card_node_2d:Card_Node_2D):
 	Set_Highlighted_in_Table()
+	Hide_Deck_List_Menu()
 	#-------------------------------------------------------------------------------
 	nothing_selected = func():MainPhase1_from_Hand_to_Idle_by_Nothing(_card_node_2d)
 	nothing_canceled = func():MainPhase1_from_Hand_to_Idle_by_Cancel(_card_node_2d)
@@ -790,7 +811,7 @@ func MainPhase1_from_Hand_to_Idle_by_Deck(_last_card_node_2d:Card_Node_2D, _new_
 	MainPhase1_Idle()
 	#-------------------------------------------------------------------------------
 	Card_in_Hand_Des_Selected(_last_card_node_2d)
-	Show_Card_Serializable_Array_in_Info_Panel(_new_deck_node.card_serializable_array)
+	Show_Card_Serializable_Array_in_Info_Panel(_new_deck_node)
 #-------------------------------------------------------------------------------
 func MainPhase1_from_Hand_to_Summon_by_Button(_card_node_2d:Card_Node_2D, _is_summon_in_attack:bool):
 	MainPhase1_Summon(_card_node_2d)
@@ -822,6 +843,7 @@ func MainPhase1_from_Hand_to_Summon_by_Button(_card_node_2d:Card_Node_2D, _is_su
 #-------------------------------------------------------------------------------
 func MainPhase1_Summon(_card_node_2d:Card_Node_2D):
 	Set_Highlighted_in_Table()
+	Hide_Deck_List_Menu()
 	#-------------------------------------------------------------------------------
 	nothing_selected = func():MainPhase1_from_Summon_to_Idle_by_Nothing(_card_node_2d)
 	nothing_canceled = func():MainPhase1_from_Summon_to_Hand_by_Cancel(_card_node_2d)
@@ -882,7 +904,7 @@ func MainPhase1_from_Summon_to_Idle_by_Zone(_last_card_node_2d:Card_Node_2D, _ne
 func MainPhase1_from_Summon_to_Idle_by_Deck(_last_card_node_2d:Card_Node_2D, _new_deck_node:Deck_Slot_Node_2D):
 	MainPhase1_Idle()
 	#-------------------------------------------------------------------------------
-	Show_Card_Serializable_Array_in_Info_Panel(_new_deck_node.card_serializable_array)
+	Show_Card_Serializable_Array_in_Info_Panel(_new_deck_node)
 	Disable_All_Card_Slots(player_1)
 #-------------------------------------------------------------------------------
 #endregion
@@ -1008,4 +1030,52 @@ func Debug_ResetGame() -> void:
 	if(Input.is_action_just_pressed("Debug_Reset")):
 		get_tree().reload_current_scene()
 #endregion
+#-------------------------------------------------------------------------------
+func Show_Deck_List_Menu(_deck_node_2d:Deck_Slot_Node_2D):
+	#-------------------------------------------------------------------------------
+	if(_deck_node_2d.card_serializable_array.size() > 0):
+		Deck_List_Menu_Clear()
+		var _card_serializable_array:Array[Card_Serializable] = Get_Sorted_Card_Serializable_Array(_deck_node_2d.card_serializable_array)
+		#-------------------------------------------------------------------------------
+		for _i in _card_serializable_array.size():
+			var _card_button: Card_Button = card_button_prefab.instantiate() as Card_Button
+			_card_button.custom_minimum_size = Vector2(70, 100)
+			Set_Card_Control_with_Card_Serializable(_card_button.card_constrol, _card_serializable_array[_i])
+			deck_list_card_button_array.append(_card_button)
+			deck_list_content.add_child(_card_button)
+		#-------------------------------------------------------------------------------
+		deck_list_scrollcontainer.get_v_scroll_bar().value = 0
+		deck_list_menu.show()
+	#-------------------------------------------------------------------------------
+	else:
+		Hide_Deck_List_Menu()
+	#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+func Hide_Deck_List_Menu():
+	Deck_List_Menu_Clear()
+	deck_list_card_button_array.clear()
+	deck_list_menu.hide()
+#-------------------------------------------------------------------------------
+func Deck_List_Menu_Clear():
+	#-------------------------------------------------------------------------------
+	for _i in deck_list_card_button_array.size():
+		deck_list_card_button_array[_i].queue_free()
+	#-------------------------------------------------------------------------------
+	deck_list_card_button_array.clear()
+#-------------------------------------------------------------------------------
+func Get_Sorted_Card_Serializable_Array(_card_serializable_array: Array[Card_Serializable]):
+	var _new_card_serializable_array: Array[Card_Serializable] = _card_serializable_array
+	#-------------------------------------------------------------------------------
+	for _i in _new_card_serializable_array.size():
+		#-------------------------------------------------------------------------------
+		for _j in range(_i+1, _new_card_serializable_array.size()):
+			#-------------------------------------------------------------------------------
+			if(get_resource_filename(_new_card_serializable_array[_i].card_resource) > get_resource_filename(_new_card_serializable_array[_j].card_resource)):
+				var _a: Card_Serializable = _new_card_serializable_array[_i]
+				_new_card_serializable_array[_i] = _new_card_serializable_array[_j]
+				_new_card_serializable_array[_j] = _a
+			#-------------------------------------------------------------------------------
+		#-------------------------------------------------------------------------------
+	#-------------------------------------------------------------------------------
+	return _new_card_serializable_array
 #-------------------------------------------------------------------------------
